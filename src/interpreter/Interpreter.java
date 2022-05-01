@@ -1,25 +1,81 @@
 package interpreter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class Interpreter {
-    private List<Double> register;
+    private final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
     private Double io0;
     private Double io1;
-    private Map<String, Consumer<String>> instructionSet;
+    private final Map<String, Consumer<String>> instructionSet;
 
     public Interpreter() {
         this.register = new ArrayList<>();
+        this.initRegister(15);
+        this.io0 = 0d;
+        this.io1 = 1d;
+        this.accumulator = 0d;
+        this.instructionSet = new HashMap<>();
+        getInstructionSet();
+    }
+
+    public void run(String program) {
+        this.executeProgram(this.parseProgram(program));
+    }
+
+    //Execute the entire program
+    private void executeProgram(List<String> program) {
+        this.programCounter = 0;
+        while (!program.get(this.programCounter).equalsIgnoreCase("STOP")) {
+            if (!program.get(this.programCounter).equalsIgnoreCase("START")) {
+                executeInstruction(program.get(this.programCounter));
+            }
+            this.programCounter++;
+        }
+        System.out.println("I/O 0: " + this.io0);
+        System.out.println("I/O 1: " + this.io1);
+        System.out.println("Program terminated successfully");
+    }
+
+    //Execute the instruction
+    private void executeInstruction(String instruction) {
+        String[] token = instruction.split(" ");
+        Consumer<String> command = this.instructionSet.get(token[0]);
+        command.accept(token[1]);
+    }
+
+    //Get lines from program and remove program number
+    private List<String> parseProgram(String program) {
+        String[] lines = program.split("\n");
+        List<String> instructions = new ArrayList<>();
+        for (String line : lines) {
+            String[] tokens = line.split(" ");
+            //StringBuilder as temporary container for copying instruction over
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < tokens.length; i++) {
+                sb.append(tokens[i]);
+                sb.append(" ");
+            }
+            //Add instruction to instructions list
+            instructions.add(sb.toString().trim());
+        }
+        return instructions;
     }
 
     private void getInstructionSet() {
-//        Consumer<String> storeInd = (operand) -> this.accumulator;
-//        Consumer<String> loadInd = (operand) -> this.accumulator;
+        Consumer<String> storeInd = (operand) -> {
+            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            this.register.set(indexPointer.intValue(), this.accumulator);
+        };
+        Consumer<String> loadInd = (operand) -> {
+            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            this.accumulator = this.register.get(indexPointer.intValue());
+        };
         Consumer<String> divNum = (operand) -> this.accumulator /= Double.parseDouble(operand);
         Consumer<String> div = (operand) -> this.accumulator /= this.register.get(Integer.parseInt(operand));
         Consumer<String> mulNum = (operand) -> this.accumulator *= Double.parseDouble(operand);
@@ -28,7 +84,6 @@ public class Interpreter {
         Consumer<String> sub = (operand) -> this.accumulator -= this.register.get(Integer.parseInt(operand));
         Consumer<String> addNum = (operand) -> this.accumulator += Double.parseDouble(operand);
         Consumer<String> add = (operand) -> this.accumulator += this.register.get(Integer.parseInt(operand));
-
         Consumer<String> jump = (operand) -> this.programCounter = Integer.parseInt(operand);
         Consumer<String> jumpNull = (operand) -> {
             if (this.accumulator == 0f) {
@@ -38,7 +93,6 @@ public class Interpreter {
         Consumer<String> jumpPos = (operand) -> {
             if (this.accumulator > 0f) {
                 this.programCounter = Integer.parseInt(operand);
-                this.executeProgram(parseProgram(operand));
             }
         };
         Consumer<String> jumpNeg = (operand) -> {
@@ -46,7 +100,7 @@ public class Interpreter {
                 this.programCounter = Integer.parseInt(operand);
             }
         };
-        Consumer<String> store = (operand) -> this.register.add(Integer.parseInt(operand), this.accumulator);
+        Consumer<String> store = (operand) -> this.register.set(Integer.parseInt(operand), this.accumulator);
         Consumer<String> load = (operand) -> this.accumulator = this.register.get(Integer.parseInt(operand));
         Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
         Consumer<String> out = (operand) -> {
@@ -69,14 +123,14 @@ public class Interpreter {
         };
         Consumer<String> start = (empty) -> {
         };
-        Consumer<String> stop = (empty) -> {
-            System.out.println("I/O 0: " + this.io0);
-            System.out.println("I/O 1: " + this.io1);
-            System.out.println("Program terminated successfully");
-            System.exit(0);
-        };
-//        instructionSet.put("STOREIND", storeInd);
-//        instructionSet.put("LOADIND", loadInd);
+//        Consumer<String> stop = (empty) -> {
+//            System.out.println("I/O 0: " + this.io0);
+//            System.out.println("I/O 1: " + this.io1);
+//            System.out.println("Program terminated successfully");
+//            System.exit(0);
+//        };
+        instructionSet.put("STOREIND", storeInd);
+        instructionSet.put("LOADIND", loadInd);
         instructionSet.put("DIVNUM", divNum);
         instructionSet.put("DIV", div);
         instructionSet.put("MULNUM", mulNum);
@@ -95,41 +149,12 @@ public class Interpreter {
         instructionSet.put("OUT", out);
         instructionSet.put("IN", in);
         instructionSet.put("START", start);
-        instructionSet.put("STOP", stop);
     }
 
-    //Execute the entire program
-    public void executeProgram(List<String> program) {
-//        program.forEach(this::executeInstruction);
-        this.programCounter =0;
-        while (true){
-            program.get(this.programCounter);
+    //init and set register to the capacity
+    private void initRegister(int capacity){
+        for (int i = 0; i < capacity; i++) {
+            this.register.add((double) 0);
         }
     }
-
-    //Execute the instruction
-    private void executeInstruction(String instruction) {
-        String[] token = instruction.split(" ");
-        Consumer<String> command = this.instructionSet.get(token[0]);
-        command.accept(token[1]);
-    }
-
-    //Get lines from program and remove program number
-    public List<String> parseProgram(String program) {
-        String[] lines = program.split("\n");
-        List<String> instructions = new ArrayList<>();
-        for (String line : lines) {
-            String[] tokens = line.split(" ");
-            //StringBuilder as temporary container for copying instruction over
-            StringBuilder sb = new StringBuilder();
-            for (int i = 1; i < tokens.length; i++) {
-                sb.append(tokens[i]);
-                sb.append(" ");
-            }
-            //Add instruction to instructions list
-            instructions.add(sb.toString().trim());
-        }
-        return instructions;
-    }
-
 }
