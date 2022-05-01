@@ -37,20 +37,32 @@ public class Interpreter {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
         };
-        Consumer<String> load = (operand) ->
+        Consumer<String> start = (empty) -> {
+        };
+        Consumer<String> stop = (empty) -> {
+            System.out.println("I/O 0: " + this.io0);
+            System.out.println("I/O 1: " + this.io1);
+            System.out.println("Program terminated successfully");
+            System.exit(0);
+        };
 
         instructionSet.put("LOADNUM", loadNum);
         instructionSet.put("OUT", out);
         instructionSet.put("IN", in);
-
+        instructionSet.put("START", start);
+        instructionSet.put("STOP", stop);
     }
 
+    //Execute the entire program
     public void executeProgram(List<String> program) {
         program.forEach(this::executeInstruction);
     }
 
+    //Execute the instruction
     private void executeInstruction(String instruction) {
-
+        String[] token = instruction.split(" ");
+        Consumer<String> command = this.instructionSet.get(token[0]);
+        command.accept(token[1]);
     }
 
     //Get lines from program and remove program number
