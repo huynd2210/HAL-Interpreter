@@ -1,9 +1,6 @@
 package interpreter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Interpreter {
@@ -16,7 +13,7 @@ public class Interpreter {
 
     public Interpreter() {
         this.register = new ArrayList<>();
-        this.initRegister(15);
+        this.initRegister(150);
         this.io0 = 0d;
         this.io1 = 1d;
         this.accumulator = 0d;
@@ -24,18 +21,35 @@ public class Interpreter {
         getInstructionSet();
     }
 
-    public void run(String program) {
-        this.executeProgram(this.parseProgram(program));
+    public void run(String program, boolean isDebug) {
+        this.executeProgram(this.parseProgram(program), isDebug);
+    }
+
+    private void printState(String currentInstruction){
+        System.out.println("Next instruction: " + currentInstruction);
+        System.out.println("Register: ");
+        for (int i = 0; i < this.register.size(); i++) {
+            if (this.register.get(i) != 0){
+                System.out.println(i + " " + this.register.get(i));
+            }
+        }
+        System.out.println("Accumulator: " + this.accumulator);
+        System.out.println("----------------------------");
     }
 
     //Execute the entire program
-    private void executeProgram(List<String> program) {
+    private void executeProgram(List<String> program, boolean isDebug) {
         this.programCounter = 0;
         while (!program.get(this.programCounter).equalsIgnoreCase("STOP")) {
             if (!program.get(this.programCounter).equalsIgnoreCase("START")) {
                 executeInstruction(program.get(this.programCounter));
             }
             this.programCounter++;
+            if (isDebug){
+                printState(program.get(this.programCounter));
+                Scanner sc = new Scanner(System.in);
+                sc.nextLine();
+            }
         }
         System.out.println("I/O 0: " + this.io0);
         System.out.println("I/O 1: " + this.io1);
@@ -113,9 +127,12 @@ public class Interpreter {
             }
         };
         Consumer<String> in = (operand) -> {
+            Scanner sc = new Scanner(System.in);
             if (Integer.parseInt(operand) == 0) {
+                this.io0 = Double.parseDouble(sc.nextLine());
                 this.accumulator = this.io0;
             } else if (Integer.parseInt(operand) == 1) {
+                this.io1 = Double.parseDouble(sc.nextLine());
                 this.accumulator = this.io1;
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");

@@ -9,7 +9,7 @@ public class main {
                 "04 OUT 1\n" +
                 "05 STOP";
         Interpreter interpreter = new Interpreter();
-        interpreter.run(program);
+        interpreter.run(program, true);
     }
 
 }
