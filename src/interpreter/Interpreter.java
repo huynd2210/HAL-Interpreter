@@ -22,7 +22,11 @@ public class Interpreter {
     }
 
     public void run(String program, boolean isDebug) {
+        long startTime = System.nanoTime();
         this.executeProgram(this.parseProgram(program), isDebug);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+        System.out.println("Program duration: " + duration);
     }
 
     private void printState(String currentInstruction){
