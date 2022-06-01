@@ -21,7 +21,7 @@ public class main {
 //        Path tmp = Paths.get("sample");
 //        Files.createFile(tmp);
         Interpreter interpreter = new Interpreter();
-        interpreter.run(program, false);
+        interpreter.run(program, true);
 
     }
 

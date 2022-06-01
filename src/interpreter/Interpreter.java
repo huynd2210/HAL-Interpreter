@@ -102,20 +102,20 @@ public class Interpreter {
         Consumer<String> sub = (operand) -> this.accumulator -= this.register.get(Integer.parseInt(operand));
         Consumer<String> addNum = (operand) -> this.accumulator += Double.parseDouble(operand);
         Consumer<String> add = (operand) -> this.accumulator += this.register.get(Integer.parseInt(operand));
-        Consumer<String> jump = (operand) -> this.programCounter = Integer.parseInt(operand);
+        Consumer<String> jump = (operand) -> this.programCounter = Integer.parseInt(operand) - 1;
         Consumer<String> jumpNull = (operand) -> {
             if (this.accumulator == 0f) {
-                this.programCounter = Integer.parseInt(operand);
+                this.programCounter = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> jumpPos = (operand) -> {
             if (this.accumulator > 0f) {
-                this.programCounter = Integer.parseInt(operand);
+                this.programCounter = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> jumpNeg = (operand) -> {
             if (this.accumulator < 0f) {
-                this.programCounter = Integer.parseInt(operand);
+                this.programCounter = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> store = (operand) -> this.register.set(Integer.parseInt(operand), this.accumulator);
