@@ -45,6 +45,7 @@ public class Interpreter {
     private void executeProgram(List<String> program, boolean isDebug) {
         this.programCounter = 0;
         while (!program.get(this.programCounter).equalsIgnoreCase("STOP")) {
+            programGuard(program.get(this.programCounter));
             if (!program.get(this.programCounter).equalsIgnoreCase("START")) {
                 executeInstruction(program.get(this.programCounter));
             }
@@ -65,6 +66,31 @@ public class Interpreter {
         String[] token = instruction.split(" ");
         Consumer<String> command = this.instructionSet.get(token[0]);
         command.accept(token[1]);
+    }
+
+    private void programGuard(String instruction){
+        String[] token = instruction.split(" ");
+        if (this.programCounter == 0 && !instruction.equalsIgnoreCase("START")){
+            throw new IllegalArgumentException("START instruction not at the top");
+        }
+        if (!this.instructionSet.containsKey(token[0])){
+            throw new IllegalArgumentException("Instruction: " + instruction + " not found");
+        }
+        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])){
+            throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
+        }
+    }
+
+    private boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     //Get lines from program and remove program number
