@@ -25,19 +25,30 @@ public class Interpreter {
         long startTime = System.nanoTime();
         this.executeProgram(this.parseProgram(program), isDebug);
         long endTime = System.nanoTime();
-        long duration = (endTime - startTime) / 1000000;
-        System.out.println("Program duration: " + duration);
+        long duration = (endTime - startTime) / 1000000; //ms
+        printRunTime(duration);
+
     }
 
-    private void printState(String currentInstruction){
+    private void printRunTime(long duration) {
+        int durationSecond = (int) duration / 1000;
+        System.out.print("Program duration: ");
+        if (durationSecond > 60) {
+            System.out.print(durationSecond / 60 + "m ");
+        }
+        System.out.print(durationSecond % 60 + "s\n");
+    }
+
+    private void printState(String currentInstruction) {
         System.out.println("Next instruction: " + currentInstruction);
         System.out.println("Register: ");
         for (int i = 0; i < this.register.size(); i++) {
-            if (this.register.get(i) != 0){
+            if (this.register.get(i) != 0) {
                 System.out.println(i + " " + this.register.get(i));
             }
         }
-        System.out.println("Accumulator: " + this.accumulator);
+        System.out.println("\nAccumulator: " + this.accumulator);
+        System.out.println("Program Counter: " + this.programCounter);
         System.out.println("----------------------------");
     }
 
@@ -49,7 +60,7 @@ public class Interpreter {
                 executeInstruction(program.get(this.programCounter));
             }
             this.programCounter++;
-            if (isDebug){
+            if (isDebug) {
                 printState(program.get(this.programCounter));
                 Scanner sc = new Scanner(System.in);
                 sc.nextLine();
@@ -57,6 +68,8 @@ public class Interpreter {
         }
         System.out.println("I/O 0: " + this.io0);
         System.out.println("I/O 1: " + this.io1);
+        System.out.println("------------");
+        System.out.println("Program Counter: " + this.programCounter);
         System.out.println("Program terminated successfully");
     }
 
@@ -173,7 +186,7 @@ public class Interpreter {
     }
 
     //init and set register to the capacity
-    private void initRegister(int capacity){
+    private void initRegister(int capacity) {
         for (int i = 0; i < capacity; i++) {
             this.register.add((double) 0);
         }
