@@ -3,7 +3,6 @@ package interpreter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ public class main {
 //                "03 DIVNUM 2\n" +
 //                "04 OUT 1\n" +
 //                "05 STOP";
-        String program = readProgramFile("sampleProgram");
+        String program = readProgramFile("sampleProgram.txt");
         System.out.println(program);
 //        Path tmp = Paths.get("sample");
 //        Files.createFile(tmp);

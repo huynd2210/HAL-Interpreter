@@ -87,7 +87,7 @@ public class Interpreter {
             throw new IllegalArgumentException("START instruction not at the top");
         }
         if (!this.instructionSet.containsKey(token[0])){
-            throw new IllegalArgumentException("Instruction: " + instruction + " not found");
+            throw new IllegalArgumentException("Instruction: " + token[0] + " not found");
         }
         if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])){
             throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
