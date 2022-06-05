@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class main {
+public class Main {
     public static void main(String[] args) throws IOException {
 //        String program = "00 START\n" +
 //                "01 LOADNUM 6.666\n" +
@@ -15,12 +15,12 @@ public class main {
 //                "03 DIVNUM 2\n" +
 //                "04 OUT 1\n" +
 //                "05 STOP";
-        String program = readProgramFile("NewtonF1Next");
+        String program = readProgramFile("NewtonF1");
         System.out.println(program);
 //        Path tmp = Paths.get("sample");
 //        Files.createFile(tmp);
         Interpreter interpreter = new Interpreter();
-        interpreter.run(program, true);
+        interpreter.run(program, false);
 
     }
 
