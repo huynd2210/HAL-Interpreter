@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 public class Interpreter {
     private final List<Double> register;
     private Double accumulator;
-    private Integer programCounter;
+    private Integer currentInstruction;
     private Double io0;
     private Double io1;
     private final Map<String, Consumer<String>> instructionSet;
@@ -48,29 +48,32 @@ public class Interpreter {
             }
         }
         System.out.println("\nAccumulator: " + this.accumulator);
-        System.out.println("Program Counter: " + this.programCounter);
+        System.out.println("Program Counter: " + this.currentInstruction);
         System.out.println("----------------------------");
     }
 
     //Execute the entire program
     private void executeProgram(List<String> program, boolean isDebug) {
-        this.programCounter = 0;
-        while (!program.get(this.programCounter).equalsIgnoreCase("STOP")) {
-            programGuard(program.get(this.programCounter));
-            if (!program.get(this.programCounter).equalsIgnoreCase("START")) {
-                executeInstruction(program.get(this.programCounter));
+        int programCounter = 0;
+        this.currentInstruction = 0;
+        while (!program.get(this.currentInstruction).equalsIgnoreCase("STOP")) {
+            programGuard(program.get(this.currentInstruction));
+            if (!program.get(this.currentInstruction).equalsIgnoreCase("START")) {
+                executeInstruction(program.get(this.currentInstruction));
             }
-            this.programCounter++;
+            this.currentInstruction++;
+            programCounter++;
             if (isDebug) {
-                printState(program.get(this.programCounter));
+                printState(program.get(this.currentInstruction));
                 Scanner sc = new Scanner(System.in);
                 sc.nextLine();
             }
         }
+        System.out.println("------------");
         System.out.println("I/O 0: " + this.io0);
         System.out.println("I/O 1: " + this.io1);
         System.out.println("------------");
-        System.out.println("Program Counter: " + this.programCounter);
+        System.out.println("Program Counter: " + programCounter);
         System.out.println("Program terminated successfully");
     }
 
@@ -82,15 +85,15 @@ public class Interpreter {
         command.accept(token[1]);
     }
 
-    private void programGuard(String instruction){
+    private void programGuard(String instruction) {
         String[] token = instruction.split(" ");
-        if (this.programCounter == 0 && !instruction.equalsIgnoreCase("START")){
+        if (this.currentInstruction == 0 && !instruction.equalsIgnoreCase("START")) {
             throw new IllegalArgumentException("START instruction not at the top");
         }
-        if (!this.instructionSet.containsKey(token[0])){
+        if (!this.instructionSet.containsKey(token[0])) {
             throw new IllegalArgumentException("Instruction: " + token[0] + " not found");
         }
-        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])){
+        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])) {
             throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
         }
     }
@@ -142,20 +145,20 @@ public class Interpreter {
         Consumer<String> sub = (operand) -> this.accumulator -= this.register.get(Integer.parseInt(operand));
         Consumer<String> addNum = (operand) -> this.accumulator += Double.parseDouble(operand);
         Consumer<String> add = (operand) -> this.accumulator += this.register.get(Integer.parseInt(operand));
-        Consumer<String> jump = (operand) -> this.programCounter = Integer.parseInt(operand) - 1;
+        Consumer<String> jump = (operand) -> this.currentInstruction = Integer.parseInt(operand) - 1;
         Consumer<String> jumpNull = (operand) -> {
             if (this.accumulator == 0f) {
-                this.programCounter = Integer.parseInt(operand) - 1;
+                this.currentInstruction = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> jumpPos = (operand) -> {
             if (this.accumulator > 0f) {
-                this.programCounter = Integer.parseInt(operand) - 1;
+                this.currentInstruction = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> jumpNeg = (operand) -> {
             if (this.accumulator < 0f) {
-                this.programCounter = Integer.parseInt(operand) - 1;
+                this.currentInstruction = Integer.parseInt(operand) - 1;
             }
         };
         Consumer<String> store = (operand) -> this.register.set(Integer.parseInt(operand), this.accumulator);
@@ -164,10 +167,8 @@ public class Interpreter {
         Consumer<String> out = (operand) -> {
             if (Integer.parseInt(operand) == 0) {
                 this.io0 = this.accumulator;
-                System.out.println("I/O 0: " + this.io0);
             } else if (Integer.parseInt(operand) == 1) {
                 this.io1 = this.accumulator;
-                System.out.println("I/O 1: " + this.io1);
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
