@@ -15,12 +15,12 @@ public class main {
 //                "03 DIVNUM 2\n" +
 //                "04 OUT 1\n" +
 //                "05 STOP";
-        String program = readProgramFile("sampleProgram.txt");
+        String program = readProgramFile("NewtonF1Next");
         System.out.println(program);
 //        Path tmp = Paths.get("sample");
 //        Files.createFile(tmp);
         Interpreter interpreter = new Interpreter();
-        interpreter.run(program, false);
+        interpreter.run(program, true);
 
     }
 

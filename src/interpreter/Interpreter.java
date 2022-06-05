@@ -74,6 +74,7 @@ public class Interpreter {
         System.out.println("Program terminated successfully");
     }
 
+
     //Execute the instruction
     private void executeInstruction(String instruction) {
         String[] token = instruction.split(" ");
@@ -163,8 +164,10 @@ public class Interpreter {
         Consumer<String> out = (operand) -> {
             if (Integer.parseInt(operand) == 0) {
                 this.io0 = this.accumulator;
+                System.out.println("I/O 0: " + this.io0);
             } else if (Integer.parseInt(operand) == 1) {
                 this.io1 = this.accumulator;
+                System.out.println("I/O 1: " + this.io1);
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
@@ -172,10 +175,12 @@ public class Interpreter {
         Consumer<String> in = (operand) -> {
             Scanner sc = new Scanner(System.in);
             if (Integer.parseInt(operand) == 0) {
-                this.io0 = Double.parseDouble(sc.nextLine());
+                System.out.print("I/O 0 :");
+                this.io0 = Double.parseDouble(sc.next());
                 this.accumulator = this.io0;
             } else if (Integer.parseInt(operand) == 1) {
-                this.io1 = Double.parseDouble(sc.nextLine());
+                System.out.print("I/O 1 :");
+                this.io1 = Double.parseDouble(sc.next());
                 this.accumulator = this.io1;
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
