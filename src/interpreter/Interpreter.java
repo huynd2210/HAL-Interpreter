@@ -1,60 +1,113 @@
 package interpreter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Interpreter {
-    private List<Double> register;
+    private final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
     private Double io0;
     private Double io1;
-    private Map<String, Consumer<String>> instructionSet;
+    private final Map<String, Consumer<String>> instructionSet;
 
     public Interpreter() {
         this.register = new ArrayList<>();
+        this.initRegister(150);
+        this.io0 = 0d;
+        this.io1 = 1d;
+        this.accumulator = 0d;
+        this.instructionSet = new HashMap<>();
+        getInstructionSet();
     }
 
-    private void getInstructionSet() {
-        Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
-        Consumer<String> out = (operand) -> {
-            if (Integer.parseInt(operand) == 0) {
-                this.io0 = this.accumulator;
-            } else if (Integer.parseInt(operand) == 1) {
-                this.io1 = this.accumulator;
-            } else {
-                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+    public void run(String program, boolean isDebug) {
+        long startTime = System.nanoTime();
+        this.executeProgram(this.parseProgram(program), isDebug);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000; //ms
+        printRunTime(duration);
+
+    }
+
+    private void printRunTime(long duration) {
+        int durationSecond = (int) duration / 1000;
+        System.out.print("Program duration: ");
+        if (durationSecond > 60) {
+            System.out.print(durationSecond / 60 + "m ");
+        }
+        System.out.print(durationSecond % 60 + "s\n");
+    }
+
+    private void printState(String currentInstruction) {
+        System.out.println("Next instruction: " + currentInstruction);
+        System.out.println("Register: ");
+        for (int i = 0; i < this.register.size(); i++) {
+            if (this.register.get(i) != 0) {
+                System.out.println(i + " " + this.register.get(i));
             }
-        };
-        Consumer<String> in = (operand) -> {
-            if (Integer.parseInt(operand) == 0) {
-                this.accumulator = this.io0;
-            } else if (Integer.parseInt(operand) == 1) {
-                this.accumulator = this.io1;
-            } else {
-                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+        }
+        System.out.println("\nAccumulator: " + this.accumulator);
+        System.out.println("Program Counter: " + this.programCounter);
+        System.out.println("----------------------------");
+    }
+
+    //Execute the entire program
+    private void executeProgram(List<String> program, boolean isDebug) {
+        this.programCounter = 0;
+        while (!program.get(this.programCounter).equalsIgnoreCase("STOP")) {
+            programGuard(program.get(this.programCounter));
+            if (!program.get(this.programCounter).equalsIgnoreCase("START")) {
+                executeInstruction(program.get(this.programCounter));
             }
-        };
-        Consumer<String> load = (operand) ->
-
-        instructionSet.put("LOADNUM", loadNum);
-        instructionSet.put("OUT", out);
-        instructionSet.put("IN", in);
-
+            this.programCounter++;
+            if (isDebug) {
+                printState(program.get(this.programCounter));
+                Scanner sc = new Scanner(System.in);
+                sc.nextLine();
+            }
+        }
+        System.out.println("I/O 0: " + this.io0);
+        System.out.println("I/O 1: " + this.io1);
+        System.out.println("------------");
+        System.out.println("Program Counter: " + this.programCounter);
+        System.out.println("Program terminated successfully");
     }
 
-    public void executeProgram(List<String> program) {
-        program.forEach(this::executeInstruction);
-    }
-
+    //Execute the instruction
     private void executeInstruction(String instruction) {
+        String[] token = instruction.split(" ");
+        Consumer<String> command = this.instructionSet.get(token[0]);
+        command.accept(token[1]);
+    }
 
+    private void programGuard(String instruction){
+        String[] token = instruction.split(" ");
+        if (this.programCounter == 0 && !instruction.equalsIgnoreCase("START")){
+            throw new IllegalArgumentException("START instruction not at the top");
+        }
+        if (!this.instructionSet.containsKey(token[0])){
+            throw new IllegalArgumentException("Instruction: " + token[0] + " not found");
+        }
+        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])){
+            throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
+        }
+    }
+
+    private boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     //Get lines from program and remove program number
-    public List<String> parseProgram(String program) {
+    private List<String> parseProgram(String program) {
         String[] lines = program.split("\n");
         List<String> instructions = new ArrayList<>();
         for (String line : lines) {
@@ -71,5 +124,97 @@ public class Interpreter {
         return instructions;
     }
 
+    private void getInstructionSet() {
+        Consumer<String> storeInd = (operand) -> {
+            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            this.register.set(indexPointer.intValue(), this.accumulator);
+        };
+        Consumer<String> loadInd = (operand) -> {
+            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            this.accumulator = this.register.get(indexPointer.intValue());
+        };
+        Consumer<String> divNum = (operand) -> this.accumulator /= Double.parseDouble(operand);
+        Consumer<String> div = (operand) -> this.accumulator /= this.register.get(Integer.parseInt(operand));
+        Consumer<String> mulNum = (operand) -> this.accumulator *= Double.parseDouble(operand);
+        Consumer<String> mul = (operand) -> this.accumulator *= this.register.get(Integer.parseInt(operand));
+        Consumer<String> subNum = (operand) -> this.accumulator -= Double.parseDouble(operand);
+        Consumer<String> sub = (operand) -> this.accumulator -= this.register.get(Integer.parseInt(operand));
+        Consumer<String> addNum = (operand) -> this.accumulator += Double.parseDouble(operand);
+        Consumer<String> add = (operand) -> this.accumulator += this.register.get(Integer.parseInt(operand));
+        Consumer<String> jump = (operand) -> this.programCounter = Integer.parseInt(operand) - 1;
+        Consumer<String> jumpNull = (operand) -> {
+            if (this.accumulator == 0f) {
+                this.programCounter = Integer.parseInt(operand) - 1;
+            }
+        };
+        Consumer<String> jumpPos = (operand) -> {
+            if (this.accumulator > 0f) {
+                this.programCounter = Integer.parseInt(operand) - 1;
+            }
+        };
+        Consumer<String> jumpNeg = (operand) -> {
+            if (this.accumulator < 0f) {
+                this.programCounter = Integer.parseInt(operand) - 1;
+            }
+        };
+        Consumer<String> store = (operand) -> this.register.set(Integer.parseInt(operand), this.accumulator);
+        Consumer<String> load = (operand) -> this.accumulator = this.register.get(Integer.parseInt(operand));
+        Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
+        Consumer<String> out = (operand) -> {
+            if (Integer.parseInt(operand) == 0) {
+                this.io0 = this.accumulator;
+            } else if (Integer.parseInt(operand) == 1) {
+                this.io1 = this.accumulator;
+            } else {
+                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+            }
+        };
+        Consumer<String> in = (operand) -> {
+            Scanner sc = new Scanner(System.in);
+            if (Integer.parseInt(operand) == 0) {
+                this.io0 = Double.parseDouble(sc.nextLine());
+                this.accumulator = this.io0;
+            } else if (Integer.parseInt(operand) == 1) {
+                this.io1 = Double.parseDouble(sc.nextLine());
+                this.accumulator = this.io1;
+            } else {
+                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+            }
+        };
+        Consumer<String> start = (empty) -> {
+        };
+//        Consumer<String> stop = (empty) -> {
+//            System.out.println("I/O 0: " + this.io0);
+//            System.out.println("I/O 1: " + this.io1);
+//            System.out.println("Program terminated successfully");
+//            System.exit(0);
+//        };
+        instructionSet.put("STOREIND", storeInd);
+        instructionSet.put("LOADIND", loadInd);
+        instructionSet.put("DIVNUM", divNum);
+        instructionSet.put("DIV", div);
+        instructionSet.put("MULNUM", mulNum);
+        instructionSet.put("MUL", mul);
+        instructionSet.put("SUBNUM", subNum);
+        instructionSet.put("SUB", sub);
+        instructionSet.put("ADDNUM", addNum);
+        instructionSet.put("ADD", add);
+        instructionSet.put("JUMP", jump);
+        instructionSet.put("JUMPNULL", jumpNull);
+        instructionSet.put("JUMPPOS", jumpPos);
+        instructionSet.put("JUMPNEG", jumpNeg);
+        instructionSet.put("STORE", store);
+        instructionSet.put("LOAD", load);
+        instructionSet.put("LOADNUM", loadNum);
+        instructionSet.put("OUT", out);
+        instructionSet.put("IN", in);
+        instructionSet.put("START", start);
+    }
 
+    //init and set register to the capacity
+    private void initRegister(int capacity) {
+        for (int i = 0; i < capacity; i++) {
+            this.register.add((double) 0);
+        }
+    }
 }
