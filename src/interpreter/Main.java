@@ -15,7 +15,7 @@ public class Main {
 //                "03 DIVNUM 2\n" +
 //                "04 OUT 1\n" +
 //                "05 STOP";
-        String program = readProgramFile("NewtonF1");
+        String program = readProgramFile("NewtonF2");
         System.out.println(program);
 //        Path tmp = Paths.get("sample");
 //        Files.createFile(tmp);

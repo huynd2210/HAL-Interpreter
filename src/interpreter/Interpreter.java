@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 public class Interpreter {
     private final List<Double> register;
     private Double accumulator;
+    private Integer programCounter;
     private Integer currentInstruction;
     private Double io0;
     private Double io1;
@@ -48,13 +49,14 @@ public class Interpreter {
             }
         }
         System.out.println("\nAccumulator: " + this.accumulator);
-        System.out.println("Program Counter: " + this.currentInstruction);
+        System.out.println("Current Instruction: " + this.currentInstruction);
+        System.out.println("PC: " + this.programCounter);
         System.out.println("----------------------------");
     }
 
     //Execute the entire program
     private void executeProgram(List<String> program, boolean isDebug) {
-        int programCounter = 0;
+        this.programCounter = 0;
         this.currentInstruction = 0;
         while (!program.get(this.currentInstruction).equalsIgnoreCase("STOP")) {
             programGuard(program.get(this.currentInstruction));
@@ -176,11 +178,11 @@ public class Interpreter {
         Consumer<String> in = (operand) -> {
             Scanner sc = new Scanner(System.in);
             if (Integer.parseInt(operand) == 0) {
-                System.out.print("I/O 0 :");
+                System.out.print("I/O 0:");
                 this.io0 = Double.parseDouble(sc.next());
                 this.accumulator = this.io0;
             } else if (Integer.parseInt(operand) == 1) {
-                System.out.print("I/O 1 :");
+                System.out.print("I/O 1:");
                 this.io1 = Double.parseDouble(sc.next());
                 this.accumulator = this.io1;
             } else {
