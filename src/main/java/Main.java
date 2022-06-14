@@ -15,9 +15,7 @@ public class Main {
             System.out.println("File argument not found, defaulting to Add2Inputs");
         } else {
             file = args[0];
-
         }
-
 
         boolean isDebug = false;
         if (args.length < 2) {
