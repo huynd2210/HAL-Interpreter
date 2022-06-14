@@ -10,22 +10,14 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        String program = "00 START\n" +
-//                "01 LOADNUM 6.666\n" +
-//                "02 STORE 8\n" +
-//                "03 DIVNUM 2\n" +
-//                "04 OUT 1\n" +
-//                "05 STOP";
         String file = args[0];
-
-//        String file = "Add2Inputs";
+        boolean isDebug = Boolean.parseBoolean(args[1]);
         System.out.println(file);
         String program = readProgramFile(file);
         System.out.println(program);
-//        Path tmp = Paths.get("sample");
-//        Files.createFile(tmp);
+
         Interpreter interpreter = new Interpreter();
-        interpreter.run(program, false);
+        interpreter.run(program, isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");
         sc.nextLine();
