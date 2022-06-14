@@ -10,8 +10,22 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String file = args[0];
-        boolean isDebug = Boolean.parseBoolean(args[1]);
+        String file = "Add2Inputs";
+        if (args.length == 0 || args[0] == null || args[0].equalsIgnoreCase("")) {
+            System.out.println("File argument not found, defaulting to Add2Inputs");
+        } else {
+            file = args[0];
+
+        }
+
+
+        boolean isDebug = false;
+        if (args.length < 2) {
+            System.out.println("Debug argument not found, defaulting to false");
+        } else {
+            isDebug = Boolean.parseBoolean(args[1]);
+        }
+
         System.out.println(file);
         String program = readProgramFile(file);
         System.out.println(program);
