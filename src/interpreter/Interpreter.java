@@ -14,7 +14,8 @@ public class Interpreter {
 
     public Interpreter() {
         this.register = new ArrayList<>();
-        this.initRegister(150);
+        int registerCapacity = 20;
+        this.initRegister(registerCapacity);
         this.io0 = 0d;
         this.io1 = 1d;
         this.accumulator = 0d;
@@ -105,7 +106,7 @@ public class Interpreter {
             return false;
         }
         try {
-            double d = Double.parseDouble(strNum);
+            Double.parseDouble(strNum);
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -191,12 +192,6 @@ public class Interpreter {
         };
         Consumer<String> start = (empty) -> {
         };
-//        Consumer<String> stop = (empty) -> {
-//            System.out.println("I/O 0: " + this.io0);
-//            System.out.println("I/O 1: " + this.io1);
-//            System.out.println("Program terminated successfully");
-//            System.exit(0);
-//        };
         instructionSet.put("STOREIND", storeInd);
         instructionSet.put("LOADIND", loadInd);
         instructionSet.put("DIVNUM", divNum);

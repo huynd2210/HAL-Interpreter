@@ -9,12 +9,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        String program = "00 START\n" +
-//                "01 LOADNUM 6.666\n" +
-//                "02 STORE 8\n" +
-//                "03 DIVNUM 2\n" +
-//                "04 OUT 1\n" +
-//                "05 STOP";
+
         String program = readProgramFile("NewtonF2");
         System.out.println(program);
 //        Path tmp = Paths.get("sample");
