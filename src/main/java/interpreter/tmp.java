@@ -42,10 +42,10 @@ public class tmp {
     }
 
     // Driver code
-    public static void main(String[] args) {
-
-        // Initial values assumed
-        double x0 = 3;
-        newtonRaphson(x0);
-    }
+//    public static void main(String[] args) {
+//
+//        // Initial values assumed
+//        double x0 = 3;
+//        newtonRaphson(x0);
+//    }
 }
