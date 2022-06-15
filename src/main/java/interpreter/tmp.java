@@ -46,7 +46,7 @@ public class tmp {
     public static void main(String[] args) {
 
         // Initial values assumed
-        double x0 = 0.35;
+        double x0 = 0.3;
         newtonRaphson(x0);
     }
 }

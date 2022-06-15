@@ -170,8 +170,12 @@ public class Interpreter {
         Consumer<String> out = (operand) -> {
             if (Integer.parseInt(operand) == 0) {
                 this.io0 = this.accumulator;
+                System.out.println("----------------------------");
+                System.out.println("I/O 0: " + this.io0);
             } else if (Integer.parseInt(operand) == 1) {
                 this.io1 = this.accumulator;
+                System.out.println("----------------------------");
+                System.out.println("I/O 1: " + this.io1);
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
