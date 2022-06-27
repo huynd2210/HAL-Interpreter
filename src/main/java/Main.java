@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String file = "NewtonF2";
+        String file = "NewtonF1";
         if (args.length == 0 || args[0] == null || args[0].equalsIgnoreCase("")) {
             System.out.println("File argument not found, defaulting to Add2Inputs");
         } else {
