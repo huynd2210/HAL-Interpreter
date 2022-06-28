@@ -21,6 +21,10 @@ public class ConnectionGraph {
                 "2:3 > 3:2\n");
     }
 
+    private void startOS(){
+        
+    }
+
     private void buildGraph(String connectionsConfig){
         for (String line : connectionsConfig.split("\n")) {
             String[] tokens = line.replace(">", "").replace(":", " ").split(" "); //0:3 > 1:2 --> 0 3  1 2
@@ -51,6 +55,13 @@ public class ConnectionGraph {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    private String splitProcessors(String config){
+        return config.split("(?=HAL-Verbindungen)")[0];
+    }
+    private String splitConnections(String config){
+        return config.split("(?=HAL-Verbindungen)")[1];
     }
 }
 

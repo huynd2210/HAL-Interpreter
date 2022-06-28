@@ -12,6 +12,7 @@ public class Interpreter {
     private Double io0;
     private Double io1;
     private final Map<String, Consumer<String>> instructionSet;
+    private String program;
 
     public Interpreter(int id) {
         this.id = id;
@@ -29,6 +30,10 @@ public class Interpreter {
         this.id = id;
         this.instructionSet = new HashMap<>();
         this.register = new ArrayList<>();
+    }
+
+    public void addProgram(String pathToProgram){
+        //some stuff
     }
 
     public void run(String program, boolean isDebug) {
