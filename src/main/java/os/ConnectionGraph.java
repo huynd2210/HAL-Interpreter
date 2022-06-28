@@ -7,27 +7,36 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ConnectionGraph {
-    private Map<Interpreter, List<Connection>> graph;
+    public Map<Interpreter, List<Connection>> graph;
     public ConnectionGraph(String configFilePath){
-
+        this.graph = new HashMap<>();
+        buildGraph("0:3 > 1:2\n" +
+                "1:3 > 2:2\n" +
+                "1:1 > 2:1\n" +
+                "2:3 > 3:2\n");
     }
 
     private void buildGraph(String connectionsConfig){
-        List<String> connectionsDescriptions = new ArrayList<>();
-        for (String line : connectionsConfig.split(" ")) {
-            String[] tokens = line.replace(">", "").replace(":", " ").split(" ");
-            Connection connection = new Connection(new Interpreter(Integer.parseInt(tokens[2])), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[0]));
-
+        for (String line : connectionsConfig.split("\n")) {
+            String[] tokens = line.replace(">", "").replace(":", " ").split(" "); //0:3 > 1:2 --> 0 3  1 2
+            Connection connection = new Connection(new Interpreter(Integer.parseInt(tokens[3])), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[4]));
+            addEntry(tokens[0], connection);
         }
     }
 
     private void addEntry(String originId, Connection connection){
-//        if (graph.containsKey())
+        Interpreter sample = new Interpreter(Integer.parseInt(originId), true);
+        if (!graph.containsKey(sample)) {
+            graph.put(new Interpreter((Integer.parseInt(originId))), new ArrayList<>());
+        }
+        graph.get(sample).add(connection);
     }
+
 
     private String readConfig(String path) {
         List<String> tmp = new ArrayList<>();
@@ -43,11 +52,5 @@ public class ConnectionGraph {
         }
         return sb.toString();
     }
-
-    private String splitProcessors(String config){
-        return config.split("(?=HAL-Verbindungen)")[0];
-    }
-    private String splitConnections(String config){
-        return config.split("(?=HAL-Verbindungen)")[1];
-    }
 }
+
