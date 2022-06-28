@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class Interpreter {
+    public int id;
     private final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
@@ -12,7 +13,8 @@ public class Interpreter {
     private Double io1;
     private final Map<String, Consumer<String>> instructionSet;
 
-    public Interpreter() {
+    public Interpreter(int id) {
+        this.id = id;
         this.register = new ArrayList<>();
         int registerCapacity = 20;
         this.initRegister(registerCapacity);
@@ -96,7 +98,7 @@ public class Interpreter {
         if (!this.instructionSet.containsKey(token[0])) {
             throw new IllegalArgumentException("Instruction: " + token[0] + " not found");
         }
-        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])) {
+        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !  isNumeric(token[1])) {
             throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
         }
     }
@@ -170,8 +172,12 @@ public class Interpreter {
         Consumer<String> out = (operand) -> {
             if (Integer.parseInt(operand) == 0) {
                 this.io0 = this.accumulator;
+                System.out.println("----------------------------");
+                System.out.println("I/O 0: " + this.io0);
             } else if (Integer.parseInt(operand) == 1) {
                 this.io1 = this.accumulator;
+                System.out.println("----------------------------");
+                System.out.println("I/O 1: " + this.io1);
             } else {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }

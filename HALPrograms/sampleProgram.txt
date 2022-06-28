@@ -6,4 +6,3 @@
 05 OUT 1
 06 LOADNUM 3
 07 STOP
-package interpreter
