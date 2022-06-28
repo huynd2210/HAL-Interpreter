@@ -28,7 +28,7 @@ public class Main {
         String program = readProgramFile(file);
         System.out.println(program);
 
-        Interpreter interpreter = new Interpreter();
+        Interpreter interpreter = new Interpreter(1);
         interpreter.run(program, isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");
@@ -50,4 +50,10 @@ public class Main {
         return sb.toString();
     }
 
+    private String splitProcessors(String config){
+        return config.split("(?=HAL-Verbindungen)")[0];
+    }
+    private String splitConnections(String config){
+        return config.split("(?=HAL-Verbindungen)")[1];
+    }
 }
