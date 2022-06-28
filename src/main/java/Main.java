@@ -57,4 +57,10 @@ public class Main {
         return sb.toString();
     }
 
+    private String splitProcessors(String config){
+        return config.split("(?=HAL-Verbindungen)")[0];
+    }
+    private String splitConnections(String config){
+        return config.split("(?=HAL-Verbindungen)")[1];
+    }
 }
