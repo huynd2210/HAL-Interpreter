@@ -13,4 +13,12 @@ public class Connection {
         this.targetIO = targetIO;
     }
 
+    @Override
+    public String toString() {
+        return "Connection{" +
+                "target=" + target +
+                ", originIO=" + originIO +
+                ", targetIO=" + targetIO +
+                '}';
+    }
 }

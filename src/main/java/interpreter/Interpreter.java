@@ -25,6 +25,12 @@ public class Interpreter {
         getInstructionSet();
     }
 
+    public Interpreter(int id, boolean isEmptyInterpreter){
+        this.id = id;
+        this.instructionSet = new HashMap<>();
+        this.register = new ArrayList<>();
+    }
+
     public void run(String program, boolean isDebug) {
         long startTime = System.nanoTime();
         this.executeProgram(this.parseProgram(program), isDebug);
@@ -225,5 +231,27 @@ public class Interpreter {
         for (int i = 0; i < capacity; i++) {
             this.register.add((double) 0);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Interpreter that = (Interpreter) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Interpreter{" +
+                "id=" + id +
+                '}';
     }
 }
