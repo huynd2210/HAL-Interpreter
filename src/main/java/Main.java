@@ -18,7 +18,7 @@ public class Main {
 //        System.out.println(connectionGraph.interpreterMap.get("0").program);
 //        connectionGraph.interpreterMap.get("0").run(false);
 
-        //        String config = "HAL - Prozessoren :\n" +
+//        String config = "HAL - Prozessoren :\n" +
 //                "0 p0 . hal\n" +
 //                "1 p1 . hal\n" +
 //                "2 p2 . hal\n" +
@@ -29,7 +29,6 @@ public class Main {
 //                "2:3 > 3:2";
 //        System.out.println(splitProcessors(config));
 //        System.out.println(splitConnections(config));
-        System.out.println("Started");
     }
 
     private static void praktikum2(String[] args) {
@@ -74,10 +73,11 @@ public class Main {
         return sb.toString();
     }
 
-    private static String splitProcessors(String config){
+    private static String splitProcessors(String config) {
         return config.split("(?=HAL - Verbindungen :)")[0];
     }
-    private static String splitConnections(String config){
+
+    private static String splitConnections(String config) {
         return config.split("(?=HAL - Verbindungen :)")[1];
     }
 }

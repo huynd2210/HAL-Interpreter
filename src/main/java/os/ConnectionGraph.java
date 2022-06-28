@@ -14,15 +14,21 @@ public class ConnectionGraph {
 
     public ConnectionGraph(String configFilePath) {
         this.interpreterMap = new HashMap<>();
-        buildGraph("0:3 > 1:2\n" +
-                "1:3 > 2:2\n" +
-//                "1:1 > 2:1\n" +
-                "2:3 > 3:2\n");
+        String config = readConfig("config/ConfigFile");
+        String programConfig = splitProcessors(config).replace("HAL-Prozessoren :\n","");
+        String connectionConfig = splitConnections(config).replace("HAL-Verbindungen :\n","");
+        buildGraph(connectionConfig);
+        setPrograms(programConfig);
 
-        setPrograms("0 HALPrograms/pipelineProgramHAL0\n" +
-                "1 HALPrograms/pipelineProgram\n" +
-                "2 HALPrograms/pipelineProgram\n" +
-                "3 HALPrograms/pipelineProgramHALN-1\n");
+//        buildGraph("0:3 > 1:2\n" +
+//                "1:3 > 2:2\n" +
+////                "1:1 > 2:1\n" +
+//                "2:3 > 3:2\n");
+//
+//        setPrograms("0 HALPrograms/pipelineProgramHAL0\n" +
+//                "1 HALPrograms/pipelineProgram\n" +
+//                "2 HALPrograms/pipelineProgram\n" +
+//                "3 HALPrograms/pipelineProgramHALN-1\n");
     }
 
     public void startOS() {
