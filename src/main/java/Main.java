@@ -1,4 +1,5 @@
 import interpreter.Interpreter;
+import os.ConnectionGraph;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        ConnectionGraph os = new ConnectionGraph("asd");
+        System.out.println(os.graph.size());
+        System.out.println(os.graph);
+    }
+
+    private static void praktikum2(String[] args) {
         String file = "NewtonF1";
         if (args.length == 0 || args[0] == null || args[0].equalsIgnoreCase("")) {
             System.out.println("File argument not found, defaulting to Add2Inputs");
@@ -28,7 +35,7 @@ public class Main {
         String program = readProgramFile(file);
         System.out.println(program);
 
-        Interpreter interpreter = new Interpreter();
+        Interpreter interpreter = new Interpreter(1);
         interpreter.run(program, isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");
