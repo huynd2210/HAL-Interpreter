@@ -14,6 +14,18 @@ public class Main {
         ConnectionGraph os = new ConnectionGraph("asd");
         System.out.println(os.graph.size());
         System.out.println(os.graph);
+//        String config = "HAL - Prozessoren :\n" +
+//                "0 p0 . hal\n" +
+//                "1 p1 . hal\n" +
+//                "2 p2 . hal\n" +
+//                "3 p3 . hal\n" +
+//                "HAL - Verbindungen :\n" +
+//                "0:3 > 1:2\n" +
+//                "1:3 > 2:2\n" +
+//                "2:3 > 3:2";
+//        System.out.println(splitProcessors(config));
+//        System.out.println(splitConnections(config));
+
     }
 
     private static void praktikum2(String[] args) {
@@ -57,10 +69,10 @@ public class Main {
         return sb.toString();
     }
 
-    private String splitProcessors(String config){
-        return config.split("(?=HAL-Verbindungen)")[0];
+    private static String splitProcessors(String config){
+        return config.split("(?=HAL - Verbindungen)")[0];
     }
-    private String splitConnections(String config){
-        return config.split("(?=HAL-Verbindungen)")[1];
+    private static String splitConnections(String config){
+        return config.split("(?=HAL - Verbindungen)")[1];
     }
 }
