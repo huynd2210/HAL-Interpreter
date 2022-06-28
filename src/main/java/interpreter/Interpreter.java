@@ -25,7 +25,7 @@ public class Interpreter {
         int registerCapacity = 40;
         this.initRegister(registerCapacity);
         this.ioList = new ArrayList<>();
-        int maxIO = 4;
+        int maxIO = 6;
         for (int i = 0; i < maxIO; i++) {
             if (i == 0) {
                 this.ioList.add(new Connection(true));

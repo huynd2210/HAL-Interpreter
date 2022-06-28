@@ -11,24 +11,20 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFile");
+
+    public static void runPipeline(){
+        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFilePipeline");
         connectionGraph.startOS();
+    }
 
-//        System.out.println(connectionGraph.interpreterMap.get("0").program);
-//        connectionGraph.interpreterMap.get("0").run(false);
+    public static void runGraph(){
+        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFileGraph");
+        connectionGraph.startOS();
+    }
 
-//        String config = "HAL - Prozessoren :\n" +
-//                "0 p0 . hal\n" +
-//                "1 p1 . hal\n" +
-//                "2 p2 . hal\n" +
-//                "3 p3 . hal\n" +
-//                "HAL - Verbindungen :\n" +
-//                "0:3 > 1:2\n" +
-//                "1:3 > 2:2\n" +
-//                "2:3 > 3:2";
-//        System.out.println(splitProcessors(config));
-//        System.out.println(splitConnections(config));
+    public static void main(String[] args) throws IOException {
+//        runPipeline();
+        runGraph();
     }
 
     private static void praktikum2(String[] args) {
@@ -71,13 +67,5 @@ public class Main {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    private static String splitProcessors(String config) {
-        return config.split("(?=HAL - Verbindungen :)")[0];
-    }
-
-    private static String splitConnections(String config) {
-        return config.split("(?=HAL - Verbindungen :)")[1];
     }
 }
