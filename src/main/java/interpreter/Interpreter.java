@@ -1,5 +1,7 @@
 package interpreter;
 
+import os.Connection;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -9,8 +11,7 @@ public class Interpreter {
     private Double accumulator;
     private Integer programCounter;
     private Integer currentInstruction;
-    private Double io0;
-    private Double io1;
+    public List<Connection> ioList;
     private final Map<String, Consumer<String>> instructionSet;
     private String program;
 
@@ -19,8 +20,11 @@ public class Interpreter {
         this.register = new ArrayList<>();
         int registerCapacity = 20;
         this.initRegister(registerCapacity);
-        this.io0 = 0d;
-        this.io1 = 1d;
+        this.ioList = new ArrayList<>();
+        int maxIO = 4;
+        for (int i = 0; i < maxIO; i++) {
+            this.ioList.add(new Connection());
+        }
         this.accumulator = 0d;
         this.instructionSet = new HashMap<>();
         getInstructionSet();
@@ -85,12 +89,12 @@ public class Interpreter {
                 sc.nextLine();
             }
         }
-        System.out.println("------------");
-        System.out.println("I/O 0: " + this.io0);
-        System.out.println("I/O 1: " + this.io1);
-        System.out.println("------------");
-        System.out.println("Program Counter: " + programCounter);
-        System.out.println("Program terminated successfully");
+//        System.out.println("------------");
+//        System.out.println("I/O 0: " + this.io0);
+//        System.out.println("I/O 1: " + this.io1);
+//        System.out.println("------------");
+//        System.out.println("Program Counter: " + programCounter);
+//        System.out.println("Program terminated successfully");
     }
 
 
@@ -181,30 +185,26 @@ public class Interpreter {
         Consumer<String> load = (operand) -> this.accumulator = this.register.get(Integer.parseInt(operand));
         Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
         Consumer<String> out = (operand) -> {
-            if (Integer.parseInt(operand) == 0) {
-                this.io0 = this.accumulator;
-                System.out.println("----------------------------");
-                System.out.println("I/O 0: " + this.io0);
-            } else if (Integer.parseInt(operand) == 1) {
-                this.io1 = this.accumulator;
-                System.out.println("----------------------------");
-                System.out.println("I/O 1: " + this.io1);
-            } else {
+            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()){
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
+            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO){
+                System.out.println("--------------");
+                System.out.println("I/O: " + operand + " " + this.ioList.get(Integer.parseInt(operand)));
+                System.out.println("--------------");
+            }else{
+                this.ioList.get(Integer.parseInt(operand)).buffer.put(this.accumulator);
+            }
         };
+
         Consumer<String> in = (operand) -> {
-            Scanner sc = new Scanner(System.in);
-            if (Integer.parseInt(operand) == 0) {
-                System.out.print("I/O 0:");
-                this.io0 = Double.parseDouble(sc.next());
-                this.accumulator = this.io0;
-            } else if (Integer.parseInt(operand) == 1) {
-                System.out.print("I/O 1:");
-                this.io1 = Double.parseDouble(sc.next());
-                this.accumulator = this.io1;
-            } else {
+            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()){
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+            }
+            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO){
+                System.out.print("I/O " + Integer.parseInt(operand) + ":");
+            }else{
+                this.ioList.get(Integer.parseInt(operand)).buffer.get();
             }
         };
         Consumer<String> start = (empty) -> {
