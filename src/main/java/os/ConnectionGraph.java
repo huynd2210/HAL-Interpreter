@@ -16,12 +16,35 @@ public class ConnectionGraph {
         this.interpreterMap = new HashMap<>();
         buildGraph("0:3 > 1:2\n" +
                 "1:3 > 2:2\n" +
-                "1:1 > 2:1\n" +
+//                "1:1 > 2:1\n" +
                 "2:3 > 3:2\n");
+
+        setPrograms("0 HALPrograms/pipelineProgramHAL0\n" +
+                "1 HALPrograms/pipelineProgram\n" +
+                "2 HALPrograms/pipelineProgram\n" +
+                "3 HALPrograms/pipelineProgramHALN-1\n");
     }
 
-    private void startOS() {
+    public void startOS() {
+        List<Thread> processors = new ArrayList<>();
+        for (Interpreter interpreter : interpreterMap.values()) {
+            Thread processor = new Thread(){
+                public void run(){
+                    interpreter.run(false);
+                }
+            };
+            processors.add(processor);
+        }
+        for (Thread processor : processors) {
+            processor.start();
+        }
+    }
 
+    private void setPrograms(String programPathConfig){
+        for (String line : programPathConfig.split("\n")) {
+            String[] tokens = line.split(" ");
+            this.interpreterMap.get(tokens[0]).addProgram(tokens[1]);
+        }
     }
 
     private void buildGraph(String connectionsConfig) {

@@ -7,14 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        ConnectionGraph os = new ConnectionGraph("config/ConfigFile");
-        System.out.println(os.graph.size());
-        System.out.println(os.graph);
-//        String config = "HAL - Prozessoren :\n" +
+        ConnectionGraph connectionGraph = new ConnectionGraph("asd");
+        connectionGraph.startOS();
+
+//        System.out.println(connectionGraph.interpreterMap.get("0").program);
+//        connectionGraph.interpreterMap.get("0").run(false);
+
+        //        String config = "HAL - Prozessoren :\n" +
 //                "0 p0 . hal\n" +
 //                "1 p1 . hal\n" +
 //                "2 p2 . hal\n" +
@@ -25,7 +29,7 @@ public class Main {
 //                "2:3 > 3:2";
 //        System.out.println(splitProcessors(config));
 //        System.out.println(splitConnections(config));
-
+        System.out.println("Started");
     }
 
     private static void praktikum2(String[] args) {
@@ -48,7 +52,8 @@ public class Main {
         System.out.println(program);
 
         Interpreter interpreter = new Interpreter(1);
-        interpreter.run(program, isDebug);
+        interpreter.addProgram(program);
+        interpreter.run(isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");
         sc.nextLine();
