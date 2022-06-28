@@ -37,7 +37,7 @@ public class Interpreter {
     }
 
     public void addProgram(String pathToProgram){
-        //some stuff
+        this.program = pathToProgram;
     }
 
     public void run(String program, boolean isDebug) {
