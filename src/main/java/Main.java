@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        ConnectionGraph os = new ConnectionGraph("asd");
+        ConnectionGraph os = new ConnectionGraph("config/ConfigFile");
         System.out.println(os.graph.size());
         System.out.println(os.graph);
 //        String config = "HAL - Prozessoren :\n" +
@@ -70,9 +70,9 @@ public class Main {
     }
 
     private static String splitProcessors(String config){
-        return config.split("(?=HAL - Verbindungen)")[0];
+        return config.split("(?=HAL - Verbindungen :)")[0];
     }
     private static String splitConnections(String config){
-        return config.split("(?=HAL - Verbindungen)")[1];
+        return config.split("(?=HAL - Verbindungen :)")[1];
     }
 }
