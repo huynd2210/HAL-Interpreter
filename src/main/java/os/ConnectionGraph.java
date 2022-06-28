@@ -15,10 +15,12 @@ public class ConnectionGraph {
     public Map<Interpreter, List<Connection>> graph;
     public ConnectionGraph(String configFilePath){
         this.graph = new HashMap<>();
-        buildGraph("0:3 > 1:2\n" +
-                "1:3 > 2:2\n" +
-                "1:1 > 2:1\n" +
-                "2:3 > 3:2\n");
+        String ConfigConnections = splitConnections(readConfig(configFilePath)).split("(?>HAL - Verbindungen :\n)")[1];
+        buildGraph(ConfigConnections);
+//        buildGraph("0:3 > 1:2\n" +
+//                "1:3 > 2:2\n" +
+//                "1:1 > 2:1\n" +
+//                "2:3 > 3:2\n");
     }
 
     private void startOS(){
@@ -58,10 +60,10 @@ public class ConnectionGraph {
     }
 
     private String splitProcessors(String config){
-        return config.split("(?=HAL-Verbindungen)")[0];
+        return config.split("(?=HAL - Verbindungen :)")[0];
     }
     private String splitConnections(String config){
-        return config.split("(?=HAL-Verbindungen)")[1];
+        return config.split("(?=HAL - Verbindungen :)")[1];
     }
 }
 
