@@ -14,7 +14,7 @@ public class ConnectionGraph {
 
     public ConnectionGraph(String configFilePath) {
         this.interpreterMap = new HashMap<>();
-        String config = readConfig("config/ConfigFile");
+        String config = readConfig(configFilePath);
         String programConfig = splitProcessors(config).replace("HAL-Prozessoren :\n","");
         String connectionConfig = splitConnections(config).replace("HAL-Verbindungen :\n","");
         buildGraph(connectionConfig);

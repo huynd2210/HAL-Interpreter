@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        ConnectionGraph connectionGraph = new ConnectionGraph("asd");
+        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFile");
         connectionGraph.startOS();
 
 //        System.out.println(connectionGraph.interpreterMap.get("0").program);
