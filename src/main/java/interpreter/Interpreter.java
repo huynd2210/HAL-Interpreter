@@ -1,5 +1,11 @@
 package interpreter;
 
+import os.Connection;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -9,39 +15,63 @@ public class Interpreter {
     private Double accumulator;
     private Integer programCounter;
     private Integer currentInstruction;
-    private Double io0;
-    private Double io1;
+    public List<Connection> ioList;
     private final Map<String, Consumer<String>> instructionSet;
-    private String program;
+    public String program;
 
     public Interpreter(int id) {
         this.id = id;
         this.register = new ArrayList<>();
-        int registerCapacity = 20;
+        int registerCapacity = 40;
         this.initRegister(registerCapacity);
-        this.io0 = 0d;
-        this.io1 = 1d;
+        this.ioList = new ArrayList<>();
+        int maxIO = 6;
+        for (int i = 0; i < maxIO; i++) {
+            if (i == 0) {
+                this.ioList.add(new Connection(true));
+            } else if (i == 1) {
+                this.ioList.add(new Connection(true));
+            } else {
+                this.ioList.add(new Connection());
+            }
+        }
         this.accumulator = 0d;
         this.instructionSet = new HashMap<>();
         getInstructionSet();
     }
 
-    public Interpreter(int id, boolean isEmptyInterpreter){
+    public Interpreter(int id, boolean isEmptyInterpreter) {
         this.id = id;
         this.instructionSet = new HashMap<>();
         this.register = new ArrayList<>();
     }
 
-    public void addProgram(String pathToProgram){
-        this.program = pathToProgram;
+    public void addProgram(String pathToProgram) {
+        this.program = readProgramFile(pathToProgram);
     }
 
-    public void run(String program, boolean isDebug) {
-        long startTime = System.nanoTime();
-        this.executeProgram(this.parseProgram(program), isDebug);
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime) / 1000000; //ms
-        printRunTime(duration);
+    public String readProgramFile(String path) {
+        List<String> tmp = new ArrayList<>();
+        try {
+            tmp = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String s : tmp) {
+            sb.append(s);
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    public void run(boolean isDebug) {
+//        long startTime = System.nanoTime();
+        System.out.println("Processor: " + this.id + " starting");
+        this.executeProgram(this.parseProgram(this.program), isDebug);
+//        long endTime = System.nanoTime();
+//        long duration = (endTime - startTime) / 1000000; //ms
+//        printRunTime(duration);
 
     }
 
@@ -85,17 +115,17 @@ public class Interpreter {
                 sc.nextLine();
             }
         }
-        System.out.println("------------");
-        System.out.println("I/O 0: " + this.io0);
-        System.out.println("I/O 1: " + this.io1);
-        System.out.println("------------");
-        System.out.println("Program Counter: " + programCounter);
-        System.out.println("Program terminated successfully");
+//        System.out.println("------------");
+//        System.out.println("I/O 0: " + this.io0);
+//        System.out.println("I/O 1: " + this.io1);
+//        System.out.println("------------");
+//        System.out.println("Program Counter: " + programCounter);
+//        System.out.println("Program terminated successfully");
     }
-
 
     //Execute the instruction
     private void executeInstruction(String instruction) {
+//        System.out.println("Processor: " + this.id + " executing instruction: " + instruction);
         String[] token = instruction.split(" ");
         Consumer<String> command = this.instructionSet.get(token[0]);
         command.accept(token[1]);
@@ -109,7 +139,7 @@ public class Interpreter {
         if (!this.instructionSet.containsKey(token[0])) {
             throw new IllegalArgumentException("Instruction: " + token[0] + " not found");
         }
-        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !  isNumeric(token[1])) {
+        if ((!instruction.equalsIgnoreCase("START") && !instruction.equalsIgnoreCase("STOP")) && !isNumeric(token[1])) {
             throw new IllegalArgumentException("Instruction: " + instruction + " does not take string argument");
         }
     }
@@ -181,30 +211,28 @@ public class Interpreter {
         Consumer<String> load = (operand) -> this.accumulator = this.register.get(Integer.parseInt(operand));
         Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
         Consumer<String> out = (operand) -> {
-            if (Integer.parseInt(operand) == 0) {
-                this.io0 = this.accumulator;
-                System.out.println("----------------------------");
-                System.out.println("I/O 0: " + this.io0);
-            } else if (Integer.parseInt(operand) == 1) {
-                this.io1 = this.accumulator;
-                System.out.println("----------------------------");
-                System.out.println("I/O 1: " + this.io1);
-            } else {
+            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
-        };
-        Consumer<String> in = (operand) -> {
-            Scanner sc = new Scanner(System.in);
-            if (Integer.parseInt(operand) == 0) {
-                System.out.print("I/O 0:");
-                this.io0 = Double.parseDouble(sc.next());
-                this.accumulator = this.io0;
-            } else if (Integer.parseInt(operand) == 1) {
-                System.out.print("I/O 1:");
-                this.io1 = Double.parseDouble(sc.next());
-                this.accumulator = this.io1;
+            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
+                System.out.println("--------------");
+                System.out.println("Processor: " + this.id + " I/O " + operand + ": " + this.accumulator);
+                System.out.println("--------------");
             } else {
+                this.ioList.get(Integer.parseInt(operand)).buffer.put(this.accumulator);
+            }
+        };
+
+        Consumer<String> in = (operand) -> {
+            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+            }
+            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
+                Scanner sc = new Scanner(System.in);
+                System.out.print("User input for Processor: " + this.id + ", I/O " + Integer.parseInt(operand) + ":");
+                this.accumulator = Double.parseDouble(sc.nextLine());
+            } else {
+                this.accumulator = this.ioList.get(Integer.parseInt(operand)).buffer.get();
             }
         };
         Consumer<String> start = (empty) -> {
@@ -257,6 +285,7 @@ public class Interpreter {
     public String toString() {
         return "Interpreter{" +
                 "id=" + id +
+                ", ioList=" + ioList +
                 '}';
     }
 }

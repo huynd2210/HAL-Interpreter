@@ -7,25 +7,24 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        ConnectionGraph os = new ConnectionGraph("config/ConfigFile");
-        System.out.println(os.graph.size());
-        System.out.println(os.graph);
-//        String config = "HAL - Prozessoren :\n" +
-//                "0 p0 . hal\n" +
-//                "1 p1 . hal\n" +
-//                "2 p2 . hal\n" +
-//                "3 p3 . hal\n" +
-//                "HAL - Verbindungen :\n" +
-//                "0:3 > 1:2\n" +
-//                "1:3 > 2:2\n" +
-//                "2:3 > 3:2";
-//        System.out.println(splitProcessors(config));
-//        System.out.println(splitConnections(config));
 
+    public static void runPipeline(){
+        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFilePipeline");
+        connectionGraph.startOS();
+    }
+
+    public static void runGraph(){
+        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFileGraph");
+        connectionGraph.startOS();
+    }
+
+    public static void main(String[] args) throws IOException {
+//        runPipeline();
+        runGraph();
     }
 
     private static void praktikum2(String[] args) {
@@ -48,7 +47,8 @@ public class Main {
         System.out.println(program);
 
         Interpreter interpreter = new Interpreter(1);
-        interpreter.run(program, isDebug);
+        interpreter.addProgram(program);
+        interpreter.run(isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");
         sc.nextLine();
@@ -67,12 +67,5 @@ public class Main {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    private static String splitProcessors(String config){
-        return config.split("(?=HAL - Verbindungen :)")[0];
-    }
-    private static String splitConnections(String config){
-        return config.split("(?=HAL - Verbindungen :)")[1];
     }
 }
