@@ -6,6 +6,7 @@ public class PageTable {
     public Map<Integer, PageInformation> pageNumberAndPageInformationMap;
     public Deque<Integer> freePages;
     public Deque<List<Object>> fifoQueueForReplacement;
+    public StringBuilder logs;
     private final int numberOfPhysicalPages = 4;
 
     public PageTable() {
@@ -16,6 +17,7 @@ public class PageTable {
         for (int i = 0; i < numberOfPhysicalPages; i++) {
             this.freePages.add(i);
         }
+        this.logs = new StringBuilder();
     }
 
     public void initEmptyPageMap() {
@@ -26,7 +28,7 @@ public class PageTable {
     }
 
     //Resolve reference query from Interpreter: load,store...etc
-    public void resolveQuery(short virtualAddress) throws Exception {
+    public short resolveQuery(short virtualAddress) throws Exception {
         int virtualPageNumber = this.getPageNumber(virtualAddress);
         if (!this.pageNumberAndPageInformationMap.containsKey(virtualPageNumber)) {
             throw new Exception("Page Number: " + virtualPageNumber + " doesnt exists in table");
@@ -34,9 +36,9 @@ public class PageTable {
 
         if (this.pageNumberAndPageInformationMap.get(virtualPageNumber) == null) {
             //resolve empty case
-            resolveEmptySlot(virtualPageNumber, virtualAddress);
+            return resolveEmptySlot(virtualPageNumber, virtualAddress);
         } else {
-            resolveTableAccess(virtualPageNumber, virtualAddress);
+            return resolveTableAccess(virtualPageNumber, virtualAddress);
         }
     }
 
@@ -75,13 +77,29 @@ public class PageTable {
 
                 if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null){
                     this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
+                    logs.append("Page fault due to empty page frame while accessing page number: ")
+                            .append(queriedPageNumber).append(" ")
+                            .append("page number ")
+                            .append(poppedPageNumber)
+                            .append(" with page frame number ")
+                            .append(replaced.physicalPageFrameMask)
+                            .append(" will be replaced")
+                            .append("\n");
+
                 }else{
                     PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
                     queriedPageInformation.isPresent = true;
                     queriedPageInformation.isReferenced = true;
                     queriedPageInformation.physicalPageFrameMask = replaced.physicalPageFrameMask;
+                    logs.append("Page fault while accessing page number: ")
+                            .append(queriedPageNumber).append(" ")
+                            .append("page number ")
+                            .append(poppedPageNumber)
+                            .append(" with page frame number ")
+                            .append(replaced.physicalPageFrameMask)
+                            .append(" will be replaced")
+                            .append("\n");
                 }
-
                 return;
             } else {
                 tmp.isReferenced = false;
@@ -89,11 +107,6 @@ public class PageTable {
             }
         }
     }
-
-    private void replacePageRandom() {
-
-    }
-
 
     private void insertPageMapEntry(int pageNumber) throws Exception {
         if (this.freePages.isEmpty()) {
@@ -103,6 +116,8 @@ public class PageTable {
         PageInformation pageInformation = new PageInformation(freePage, true, true);
         this.pageNumberAndPageInformationMap.put(pageNumber, pageInformation);
         this.fifoQueueForReplacement.add(List.of(pageNumber, pageInformation));
+        this.logs.append("Page fault due to empty page frame number, inserting new page frame number: ")
+                .append(freePage).append(" at index ").append(pageNumber).append("\n");
     }
 
     public int getPageNumber(short virtualAddress) {
