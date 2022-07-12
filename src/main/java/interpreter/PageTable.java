@@ -6,7 +6,10 @@ public class PageTable {
     public Map<Integer, PageInformation> pageNumberAndPageInformationMap;
     public Deque<Integer> freePages;
     public Deque<List<Object>> fifoQueueForReplacement;
+    public StringBuilder logs;
     private final int numberOfPhysicalPages = 4;
+
+
 
     public PageTable() {
         this.pageNumberAndPageInformationMap = new HashMap<>();
@@ -75,11 +78,25 @@ public class PageTable {
 
                 if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null){
                     this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
+                    logs.append("Page fault due to empty page frame while accessing page number: ")
+                            .append(queriedPageNumber).append(" ")
+                            .append("page number ")
+                            .append(poppedPageNumber)
+                            .append(" with page frame number ")
+                            .append(replaced.physicalPageFrameMask)
+                            .append(" will be replaced");
                 }else{
                     PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
                     queriedPageInformation.isPresent = true;
                     queriedPageInformation.isReferenced = true;
                     queriedPageInformation.physicalPageFrameMask = replaced.physicalPageFrameMask;
+                    logs.append("Page fault while accessing page number: ")
+                            .append(queriedPageNumber).append(" ")
+                            .append("page number ")
+                            .append(poppedPageNumber)
+                            .append(" with page frame number ")
+                            .append(replaced.physicalPageFrameMask)
+                            .append(" will be replaced");
                 }
 
                 return;
@@ -90,11 +107,6 @@ public class PageTable {
         }
     }
 
-    private void replacePageRandom() {
-
-    }
-
-
     private void insertPageMapEntry(int pageNumber) throws Exception {
         if (this.freePages.isEmpty()) {
             throw new Exception("There are no free pages left");
@@ -103,6 +115,8 @@ public class PageTable {
         PageInformation pageInformation = new PageInformation(freePage, true, true);
         this.pageNumberAndPageInformationMap.put(pageNumber, pageInformation);
         this.fifoQueueForReplacement.add(List.of(pageNumber, pageInformation));
+        this.logs.append("Page fault due to empty page frame number, inserting new page frame number: ")
+                .append(freePage).append(" at ").append(pageNumber);
     }
 
     public int getPageNumber(short virtualAddress) {
