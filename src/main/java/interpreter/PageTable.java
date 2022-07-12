@@ -34,27 +34,20 @@ public class PageTable {
 
         if (this.pageNumberAndPageInformationMap.get(virtualPageNumber) == null) {
             //resolve empty case
-
+            resolveEmptySlot(virtualPageNumber, virtualAddress);
         } else {
             resolveTableAccess(virtualPageNumber, virtualAddress);
         }
-
-//
-//        if (this.pageNumberAndPageInformationMap.get(pageNumber) == null) {
-//            this.insertPageMapEntry(pageNumber);
-//        } else {
-//            resolveTableAccess(pageNumber, virtualAddress);
-//        }
-
     }
 
-    private void resolveEmptySlot(int pageNumber, short virtualAddress) throws Exception {
+    private short resolveEmptySlot(int pageNumber, short virtualAddress) throws Exception {
         //still remaining free physical memory pages
         if (this.fifoQueueForReplacement.size() < this.numberOfPhysicalPages) {
             this.insertPageMapEntry(pageNumber);
         } else {
-//            resolveTableAccessOnPageAbsent(pageNumber, virtualAddress);
+            resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
         }
+        return this.virtualToPhysicalAddress(virtualAddress);
     }
 
     private short resolveTableAccess(int virtualPageNumber, short virtualAddress) {
@@ -79,10 +72,15 @@ public class PageTable {
                 replaced.isPresent = false;
 
                 int queriedPageNumber = this.getPageNumber(virtualAddress);
-                PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
-                queriedPageInformation.isPresent = true;
-                queriedPageInformation.isReferenced = true;
-                queriedPageInformation.physicalPageFrameMask = replaced.physicalPageFrameMask;
+
+                if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null){
+                    this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
+                }else{
+                    PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
+                    queriedPageInformation.isPresent = true;
+                    queriedPageInformation.isReferenced = true;
+                    queriedPageInformation.physicalPageFrameMask = replaced.physicalPageFrameMask;
+                }
 
                 return;
             } else {
