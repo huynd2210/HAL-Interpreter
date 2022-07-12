@@ -9,8 +9,6 @@ public class PageTable {
     public StringBuilder logs;
     private final int numberOfPhysicalPages = 4;
 
-
-
     public PageTable() {
         this.pageNumberAndPageInformationMap = new HashMap<>();
         this.fifoQueueForReplacement = new LinkedList<>();
@@ -19,6 +17,7 @@ public class PageTable {
         for (int i = 0; i < numberOfPhysicalPages; i++) {
             this.freePages.add(i);
         }
+        this.logs = new StringBuilder();
     }
 
     public void initEmptyPageMap() {
@@ -84,7 +83,9 @@ public class PageTable {
                             .append(poppedPageNumber)
                             .append(" with page frame number ")
                             .append(replaced.physicalPageFrameMask)
-                            .append(" will be replaced");
+                            .append(" will be replaced")
+                            .append("\n");
+
                 }else{
                     PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
                     queriedPageInformation.isPresent = true;
@@ -96,7 +97,8 @@ public class PageTable {
                             .append(poppedPageNumber)
                             .append(" with page frame number ")
                             .append(replaced.physicalPageFrameMask)
-                            .append(" will be replaced");
+                            .append(" will be replaced")
+                            .append("\n");
                 }
                 return;
             } else {
@@ -115,7 +117,7 @@ public class PageTable {
         this.pageNumberAndPageInformationMap.put(pageNumber, pageInformation);
         this.fifoQueueForReplacement.add(List.of(pageNumber, pageInformation));
         this.logs.append("Page fault due to empty page frame number, inserting new page frame number: ")
-                .append(freePage).append(" at ").append(pageNumber);
+                .append(freePage).append(" at index ").append(pageNumber).append("\n");
     }
 
     public int getPageNumber(short virtualAddress) {

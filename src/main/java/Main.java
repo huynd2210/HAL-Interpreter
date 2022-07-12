@@ -1,4 +1,5 @@
 import interpreter.Interpreter;
+import interpreter.PageTable;
 import os.ConnectionGraph;
 
 import java.io.IOException;
@@ -23,24 +24,31 @@ public class Main {
     }
 
 
-    public static int getPageNumber(short virtualAddress) {
-        short virtualPageNumberMask = (short) 61440;
-        short maskedAddress = (short) (virtualAddress & virtualPageNumberMask);
-        return (maskedAddress >> 12);
-    }
+//    public static int getPageNumber(short virtualAddress) {
+//        short virtualPageNumberMask = (short) 64512;
+//        short maskedAddress = (short) (virtualAddress & virtualPageNumberMask);
+//        return (maskedAddress >> 10);
+//    }
+//
+//    public static short virtualToPhysicalAddress(short virtualAddress) {
+//        //first 6bit, note: 6bits for the entirety of virtual address, but physical address wont fully use 6bits during translation
+//        int pageNumber = getPageNumber(virtualAddress);
+//        int offsetMask = 1023;
+//        int maskedOffset = virtualAddress & offsetMask; //10 offset bits
+//
+//        int physicalAddress = pageNumberAndPageInformationMap.get(pageNumber).physicalPageFrameMask | maskedOffset;
+//        return (short) physicalAddress;
+//    }
 
-    public static short virtualToPhysicalAddress(short virtualAddress) {
-        int pageNumber = getPageNumber(virtualAddress); //first 4 bit
-        int offsetMask = 4095;
-        int maskedOffset = virtualAddress & offsetMask; //12 offset
+    public static void main(String[] args) throws Exception {
+//        System.out.println(virtualToPhysicalAddress((short)8197));
+        PageTable pt = new PageTable();
+//        System.out.println(pt.resolveQuery((short) 10));
+//        System.out.println(pt.resolveQuery((short) 15));
+//        System.out.println(pt.resolveQuery((short) 3));
+        System.out.println(pt.resolveQuery((short) 1027));
+        System.out.println(pt.logs.toString());
 
-        int first4bitsMask = 24576;
-        int physicalAddress = first4bitsMask | maskedOffset;
-        return (short)physicalAddress;
-    }
-
-    public static void main(String[] args) throws IOException {
-        System.out.println(virtualToPhysicalAddress((short)8197));
     }
 
     private static void praktikum2(String[] args) {
