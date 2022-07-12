@@ -11,16 +11,18 @@ import java.util.function.Consumer;
 
 public class Interpreter {
     public int id;
+    public String program;
+    public List<Connection> ioList;
     private final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
     private Integer currentInstruction;
-    public List<Connection> ioList;
     private final Map<String, Consumer<String>> instructionSet;
-    public String program;
+    private PageTable pageTable;
 
     public Interpreter(int id) {
         this.id = id;
+        this.pageTable = new PageTable();
         this.register = new ArrayList<>();
         int registerCapacity = 4000;
         this.initRegister(registerCapacity);
@@ -38,6 +40,7 @@ public class Interpreter {
         this.accumulator = 0d;
         this.instructionSet = new HashMap<>();
         getInstructionSet();
+
     }
 
     public Interpreter(int id, boolean isEmptyInterpreter) {
@@ -176,11 +179,21 @@ public class Interpreter {
 
     private void getInstructionSet() {
         Consumer<String> storeInd = (operand) -> {
-            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            Double indexPointer = 0.0;
+            try {
+                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             this.register.set(indexPointer.intValue(), this.accumulator);
         };
         Consumer<String> loadInd = (operand) -> {
-            Double indexPointer = this.register.get(Integer.parseInt(operand));
+            Double indexPointer = 0.0;
+            try {
+                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             this.accumulator = this.register.get(indexPointer.intValue());
         };
         Consumer<String> divNum = (operand) -> this.accumulator /= Double.parseDouble(operand);
@@ -207,8 +220,20 @@ public class Interpreter {
                 this.currentInstruction = Integer.parseInt(operand) - 1;
             }
         };
-        Consumer<String> store = (operand) -> this.register.set(Integer.parseInt(operand), this.accumulator);
-        Consumer<String> load = (operand) -> this.accumulator = this.register.get(Integer.parseInt(operand));
+        Consumer<String> store = (operand) -> {
+            try {
+                this.register.set(this.pageTable.resolveQuery(Short.parseShort(operand)), this.accumulator);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+        Consumer<String> load = (operand) -> {
+            try {
+                this.accumulator = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
         Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
         Consumer<String> out = (operand) -> {
             if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {

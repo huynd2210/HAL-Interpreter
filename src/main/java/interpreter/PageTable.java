@@ -27,7 +27,7 @@ public class PageTable {
         }
     }
 
-    //Resolve reference query from Interpreter: load,store...etc
+    //Resolve reference query from Interpreter: load,store...etc returns the physical address
     public short resolveQuery(short virtualAddress) throws Exception {
         int virtualPageNumber = this.getPageNumber(virtualAddress);
         if (!this.pageNumberAndPageInformationMap.containsKey(virtualPageNumber)) {
