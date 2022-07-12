@@ -29,7 +29,7 @@ public class PageTable {
     }
 
     //Resolve reference query from Interpreter: load,store...etc
-    public void resolveQuery(short virtualAddress) throws Exception {
+    public short resolveQuery(short virtualAddress) throws Exception {
         int virtualPageNumber = this.getPageNumber(virtualAddress);
         if (!this.pageNumberAndPageInformationMap.containsKey(virtualPageNumber)) {
             throw new Exception("Page Number: " + virtualPageNumber + " doesnt exists in table");
@@ -37,9 +37,9 @@ public class PageTable {
 
         if (this.pageNumberAndPageInformationMap.get(virtualPageNumber) == null) {
             //resolve empty case
-            resolveEmptySlot(virtualPageNumber, virtualAddress);
+            return resolveEmptySlot(virtualPageNumber, virtualAddress);
         } else {
-            resolveTableAccess(virtualPageNumber, virtualAddress);
+            return resolveTableAccess(virtualPageNumber, virtualAddress);
         }
     }
 
@@ -98,7 +98,6 @@ public class PageTable {
                             .append(replaced.physicalPageFrameMask)
                             .append(" will be replaced");
                 }
-
                 return;
             } else {
                 tmp.isReferenced = false;
