@@ -22,9 +22,25 @@ public class Main {
         connectionGraph.startOS();
     }
 
+
+    public static int getPageNumber(short virtualAddress) {
+        short virtualPageNumberMask = (short) 61440;
+        short maskedAddress = (short) (virtualAddress & virtualPageNumberMask);
+        return (maskedAddress >> 12);
+    }
+
+    public static short virtualToPhysicalAddress(short virtualAddress) {
+        int pageNumber = getPageNumber(virtualAddress); //first 4 bit
+        int offsetMask = 4095;
+        int maskedOffset = virtualAddress & offsetMask; //12 offset
+
+        int first4bitsMask = 24576;
+        int physicalAddress = first4bitsMask | maskedOffset;
+        return (short)physicalAddress;
+    }
+
     public static void main(String[] args) throws IOException {
-//        runPipeline();
-        runGraph();
+        System.out.println(virtualToPhysicalAddress((short)8197));
     }
 
     private static void praktikum2(String[] args) {

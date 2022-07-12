@@ -2,8 +2,10 @@ HAL-Prozessoren :
 0 HALPrograms/pipelineProgramHAL0
 1 HALPrograms/pipelineProgram
 2 HALPrograms/pipelineProgram
-3 HALPrograms/pipelineProgramHALN-1
+3 HALPrograms/pipelineProgram
+4 HALPrograms/pipelineProgramHALN-1
 HAL-Verbindungen :
 0:3 > 1:2
 1:3 > 2:2
 2:3 > 3:2
+3:3 > 4:2

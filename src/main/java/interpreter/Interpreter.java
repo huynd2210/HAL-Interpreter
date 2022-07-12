@@ -22,7 +22,7 @@ public class Interpreter {
     public Interpreter(int id) {
         this.id = id;
         this.register = new ArrayList<>();
-        int registerCapacity = 40;
+        int registerCapacity = 4000;
         this.initRegister(registerCapacity);
         this.ioList = new ArrayList<>();
         int maxIO = 6;
