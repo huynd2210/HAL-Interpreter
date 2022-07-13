@@ -29,6 +29,7 @@ public class Interpreter {
         this.initRegister(registerCapacity);
         this.ioList = new ArrayList<>();
         int maxIO = 6;
+        this.initIO(maxIO);
 //        for (int i = 0; i < maxIO; i++) {
 //            if (i == 0) {
 //                this.ioList.add(new Connection(true));
@@ -319,6 +320,11 @@ public class Interpreter {
     private void initRegister(int capacity) {
         for (int i = 0; i < capacity; i++) {
             this.register.add((double) 0);
+        }
+    }
+    private void initIO(int maxIO) {
+        for (int i = 0; i < maxIO; i++) {
+            this.ioList.add("");
         }
     }
 
