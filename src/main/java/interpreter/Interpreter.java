@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class Interpreter {
     public int id;
     public String program;
-    public List<Connection> ioList;
+    public List<String> ioList;
     private final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
@@ -28,15 +28,15 @@ public class Interpreter {
         this.initRegister(registerCapacity);
         this.ioList = new ArrayList<>();
         int maxIO = 6;
-        for (int i = 0; i < maxIO; i++) {
-            if (i == 0) {
-                this.ioList.add(new Connection(true));
-            } else if (i == 1) {
-                this.ioList.add(new Connection(true));
-            } else {
-                this.ioList.add(new Connection());
-            }
-        }
+//        for (int i = 0; i < maxIO; i++) {
+//            if (i == 0) {
+//                this.ioList.add(new Connection(true));
+//            } else if (i == 1) {
+//                this.ioList.add(new Connection(true));
+//            } else {
+//                this.ioList.add(new Connection());
+//            }
+//        }
         this.accumulator = 0d;
         this.instructionSet = new HashMap<>();
         getInstructionSet();
@@ -131,7 +131,11 @@ public class Interpreter {
 //        System.out.println("Processor: " + this.id + " executing instruction: " + instruction);
         String[] token = instruction.split(" ");
         Consumer<String> command = this.instructionSet.get(token[0]);
-        command.accept(token[1]);
+        if (token.length == 2){
+            command.accept(token[1]);
+        }else{
+            command.accept("");
+        }
     }
 
     private void programGuard(String instruction) {
@@ -235,33 +239,59 @@ public class Interpreter {
             }
         };
         Consumer<String> loadNum = (operand) -> this.accumulator = Double.parseDouble(operand);
-        Consumer<String> out = (operand) -> {
+//        Consumer<String> out = (operand) -> {
+//            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
+//                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+//            }
+//            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
+//                System.out.println("--------------");
+//                System.out.println("Processor: " + this.id + " I/O " + operand + ": " + this.accumulator);
+//                System.out.println("--------------");
+//            } else {
+//                this.ioList.get(Integer.parseInt(operand)).buffer.put(this.accumulator);
+//            }
+//        };
+
+        Consumer<String> out = operand -> {
             if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
                 throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
             }
-            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
-                System.out.println("--------------");
-                System.out.println("Processor: " + this.id + " I/O " + operand + ": " + this.accumulator);
-                System.out.println("--------------");
-            } else {
-                this.ioList.get(Integer.parseInt(operand)).buffer.put(this.accumulator);
+            ioList.set(Integer.parseInt(operand), this.accumulator.toString());
+            System.out.println("I/O " + operand + ": " + this.ioList.get(Integer.parseInt(operand)));
+        };
+
+//        Consumer<String> in = (operand) -> {
+//            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
+//                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+//            }
+//            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
+//                Scanner sc = new Scanner(System.in);
+//                System.out.print("User input for Processor: " + this.id + ", I/O " + Integer.parseInt(operand) + ":");
+//                this.accumulator = Double.parseDouble(sc.nextLine());
+//            } else {
+//                this.accumulator = this.ioList.get(Integer.parseInt(operand)).buffer.get();
+//            }
+//        };
+
+        Consumer<String> in = operand -> {
+            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
+                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
+            }
+            Scanner sc = new Scanner(System.in);
+            System.out.println("User Input for I/O: " + operand);
+            this.accumulator = Double.parseDouble(sc.nextLine());
+        };
+
+        Consumer<String> start = (empty) -> {
+        };
+
+        Consumer<String> dumpreg = (empty) -> {
+            StringBuilder sb = new StringBuilder("\n");
+            for (int i = 0; i < this.register.size(); i++) {
+                sb.append("Registernummer: " + i + " " + this.register.get(i));
             }
         };
 
-        Consumer<String> in = (operand) -> {
-            if (Integer.parseInt(operand) < 0 || Integer.parseInt(operand) >= this.ioList.size()) {
-                throw new IllegalArgumentException("I/O " + operand + " doesnt exist");
-            }
-            if (this.ioList.get(Integer.parseInt(operand)).isConnectedToUserIO) {
-                Scanner sc = new Scanner(System.in);
-                System.out.print("User input for Processor: " + this.id + ", I/O " + Integer.parseInt(operand) + ":");
-                this.accumulator = Double.parseDouble(sc.nextLine());
-            } else {
-                this.accumulator = this.ioList.get(Integer.parseInt(operand)).buffer.get();
-            }
-        };
-        Consumer<String> start = (empty) -> {
-        };
         instructionSet.put("STOREIND", storeInd);
         instructionSet.put("LOADIND", loadInd);
         instructionSet.put("DIVNUM", divNum);
