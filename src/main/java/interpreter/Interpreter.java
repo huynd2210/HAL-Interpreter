@@ -186,7 +186,7 @@ public class Interpreter {
         Consumer<String> storeInd = (operand) -> {
             Double indexPointer = 0.0;
             try {
-                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
+                indexPointer = this.register.get(this.pageTable.resolveQuery((Integer.parseInt(operand)), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -195,7 +195,7 @@ public class Interpreter {
         Consumer<String> loadInd = (operand) -> {
             Double indexPointer = 0.0;
             try {
-                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
+                indexPointer = this.register.get(this.pageTable.resolveQuery((Integer.parseInt(operand)), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -227,14 +227,14 @@ public class Interpreter {
         };
         Consumer<String> store = (operand) -> {
             try {
-                this.register.set(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement), this.accumulator);
+                this.register.set(this.pageTable.resolveQuery((Integer.parseInt(operand)), isRandomReplacement), this.accumulator);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
         Consumer<String> load = (operand) -> {
             try {
-                this.accumulator = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
+                this.accumulator = this.register.get(this.pageTable.resolveQuery((Integer.parseInt(operand)), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -10,5 +10,11 @@ public class PageInformation {
         this.isPresent = isPresent;
         this.isReferenced = isReferenced;
     }
+
+    public PageInformation(int physicalPageFrameMask, boolean isPresent, boolean isReferenced, boolean isPhysical){
+        this.physicalPageFrameMask = physicalPageFrameMask; //10 is length of offset bits unless it is already computed
+        this.isPresent = isPresent;
+        this.isReferenced = isReferenced;
+    }
 }
 
