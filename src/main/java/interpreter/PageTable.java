@@ -7,9 +7,11 @@ public class PageTable {
     public Deque<Integer> freePages;
     public Deque<List<Object>> fifoQueueForReplacement;
     public StringBuilder logs;
+    public Interpreter interpreter;
     private final int numberOfPhysicalPages = 4;
 
-    public PageTable() {
+    public PageTable(Interpreter interpreter) {
+        this.interpreter = interpreter;
         this.pageNumberAndPageInformationMap = new HashMap<>();
         this.fifoQueueForReplacement = new LinkedList<>();
         this.initEmptyPageMap();
@@ -33,7 +35,6 @@ public class PageTable {
         if (!this.pageNumberAndPageInformationMap.containsKey(virtualPageNumber)) {
             throw new Exception("Page Number: " + virtualPageNumber + " doesnt exists in table");
         }
-
         if (this.pageNumberAndPageInformationMap.get(virtualPageNumber) == null) {
             //resolve empty case
             return resolveEmptySlot(virtualPageNumber, virtualAddress, isRandomReplacement);
@@ -48,9 +49,9 @@ public class PageTable {
             this.insertPageMapEntry(pageNumber);
         } else {
 
-            if (isRandomReplacement){
+            if (isRandomReplacement) {
                 resolveTableAccessOnPageAbsentWithRandomness(virtualAddress);
-            }else{
+            } else {
                 resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
             }
         }
@@ -62,9 +63,9 @@ public class PageTable {
         if (pageInformation.isPresent) {
             pageInformation.isReferenced = true;
         } else {
-            if (isRandomReplacement){
+            if (isRandomReplacement) {
                 resolveTableAccessOnPageAbsentWithRandomness(virtualAddress);
-            }else{
+            } else {
                 resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
             }
         }
@@ -73,10 +74,9 @@ public class PageTable {
 
     private void resolveTableAccessOnPageAbsentWithRandomness(int virtualAddress) {
         //resolve seitenersetzung random
-
         List<Integer> activePageNumber = new ArrayList<>();
         for (Map.Entry<Integer, PageInformation> entry : this.pageNumberAndPageInformationMap.entrySet()) {
-            if (entry.getValue() != null){
+            if (entry.getValue() != null) {
                 activePageNumber.add(entry.getKey());
             }
         }
@@ -85,11 +85,21 @@ public class PageTable {
         int pageNumberToBeReplaced = activePageNumber.get(0);
         PageInformation replaced = this.pageNumberAndPageInformationMap.get(pageNumberToBeReplaced);
         replaced.isPresent = false;
-
+        for (int i = replaced.physicalPageFrameMask; i < 1000 + replaced.physicalPageFrameMask; i++) {
+            replaced.data.set(i, this.interpreter.register.get(i));
+        }
         int queriedPageNumber = this.getPageNumber(virtualAddress);
 
         if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null) {
-            this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true, true));
+            PageInformation pageNew = new PageInformation(replaced.physicalPageFrameMask, true, true, true);
+
+            if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) != null){
+                pageNew.data = this.pageNumberAndPageInformationMap.get(queriedPageNumber).data;
+            }
+
+            this.pageNumberAndPageInformationMap.put(queriedPageNumber, pageNew);
+
+//            this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true, true));
             logs.append("Page fault due to empty page frame while accessing page number: ")
                     .append(queriedPageNumber).append(". ")
                     .append("page number ")
@@ -115,6 +125,10 @@ public class PageTable {
         }
     }
 
+    private int calculateEndRange(int physicalPageFrameMask) {
+        return (physicalPageFrameMask * 2) - 1;
+    }
+
     private void resolveTableAccessOnPageAbsentWithFifoReference(int virtualAddress) {
         //resolve seitenersetzung
         while (true) {
@@ -125,12 +139,22 @@ public class PageTable {
                 int poppedPageNumber = (int) pop.get(0);
                 PageInformation replaced = this.pageNumberAndPageInformationMap.get(poppedPageNumber);
                 replaced.isPresent = false;
-
+                for (int i = replaced.physicalPageFrameMask; i <= 1024 + replaced.physicalPageFrameMask; i++) {
+//                    replaced.data.set(i, this.interpreter.register.get(i));
+                    replaced.data.add(this.interpreter.register.get(i));
+                }
                 int queriedPageNumber = this.getPageNumber(virtualAddress);
 
                 if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null) {
-                    this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true, true));
-                    this.fifoQueueForReplacement.add(List.of(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true, true)));
+                    PageInformation pageNew = new PageInformation(replaced.physicalPageFrameMask, true, true, true);
+
+                    if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) != null){
+                        pageNew.data = this.pageNumberAndPageInformationMap.get(queriedPageNumber).data;
+                    }
+
+                    this.pageNumberAndPageInformationMap.put(queriedPageNumber, pageNew);
+//                    this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true, true));
+                    this.fifoQueueForReplacement.add(List.of(queriedPageNumber, pageNew));
                     logs.append("Page fault due to empty page frame while accessing page number: ")
                             .append(queriedPageNumber).append(". ")
                             .append("page number ")
@@ -139,7 +163,6 @@ public class PageTable {
                             .append(replaced.physicalPageFrameMask)
                             .append(" will be replaced")
                             .append("\n");
-
                 } else {
                     PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
                     queriedPageInformation.isPresent = true;
@@ -185,8 +208,9 @@ public class PageTable {
         int pageNumber = getPageNumber(virtualAddress);
         int offsetMask = 1023;
         int maskedOffset = virtualAddress & offsetMask; //10 offset bits
+        PageInformation pageInformation = this.pageNumberAndPageInformationMap.get(pageNumber);
 
-        int physicalAddress = pageNumberAndPageInformationMap.get(pageNumber).physicalPageFrameMask | maskedOffset;
+        int physicalAddress = pageInformation.physicalPageFrameMask | maskedOffset;
         return physicalAddress;
     }
 }

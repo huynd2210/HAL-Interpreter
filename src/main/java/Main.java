@@ -23,7 +23,7 @@ public class Main {
 //    }
 
     public static void manualTest(boolean isRandom) throws Exception {
-        PageTable pt = new PageTable();
+        PageTable pt = new PageTable(new Interpreter(1));
         System.out.println(pt.resolveQuery( 1, isRandom));
         System.out.println(pt.resolveQuery( 1025, isRandom));
         System.out.println(pt.resolveQuery( 2049, isRandom));
@@ -31,36 +31,35 @@ public class Main {
         System.out.println(pt.resolveQuery( 4098, isRandom));
         System.out.println(pt.resolveQuery( 4099, isRandom));
         System.out.println(pt.resolveQuery( 5121, isRandom));
-
     }
 
     public static void testPageTable(boolean isRandomReplacement) throws Exception {
-        PageTable pt = new PageTable();
+        PageTable pt = new PageTable(new Interpreter(1));
 
         System.out.println(pt.fifoQueueForReplacement);
         System.out.println(pt.logs);
 
-//        for (int i = 0; i < 1024; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 1024; i < 2048; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 2048; i < 3072; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 3072; i < 4096; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 4096; i < 5120; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 5120; i < 6144; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
-//        for (int i = 6144; i < 7168; i++) {
-//            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-//        }
+        for (int i = 0; i < 1024; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 1024; i < 2048; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 2048; i < 3072; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 3072; i < 4096; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 4096; i < 5120; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 5120; i < 6144; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
+        for (int i = 6144; i < 7168; i++) {
+            System.out.println(pt.resolveQuery(i, isRandomReplacement));
+        }
         System.out.println(pt.logs.toString());
         System.out.println("There are in total: " + getAmountOfPageFaults(pt.logs.toString()) + " page faults, with 4 page faults resulting from initial insertion");
 //        praktikum5(new String[]{"sampleHAL1961", "false"});
@@ -71,8 +70,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-//        testPageTable(false);
-        manualTest(false);
+        testPageTable(false);
+//        manualTest(false);
     }
 
     private static void praktikum2(String[] args) {
@@ -82,14 +81,12 @@ public class Main {
         } else {
             file = args[0];
         }
-
         boolean isDebug = false;
         if (args.length < 2) {
             System.out.println("Debug argument not found, defaulting to false");
         } else {
             isDebug = Boolean.parseBoolean(args[1]);
         }
-
         System.out.println(file);
         String program = readProgramFile(file);
         System.out.println(program);

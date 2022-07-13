@@ -13,7 +13,7 @@ public class Interpreter {
     public int id;
     public String program;
     public List<String> ioList;
-    private final List<Double> register;
+    public final List<Double> register;
     private Double accumulator;
     private Integer programCounter;
     private Integer currentInstruction;
@@ -23,7 +23,7 @@ public class Interpreter {
 
     public Interpreter(int id) {
         this.id = id;
-        this.pageTable = new PageTable();
+        this.pageTable = new PageTable(this);
         this.register = new ArrayList<>();
         int registerCapacity = 4000;
         this.initRegister(registerCapacity);
@@ -233,6 +233,7 @@ public class Interpreter {
                 e.printStackTrace();
             }
         };
+
         Consumer<String> load = (operand) -> {
             try {
                 this.accumulator = this.register.get(this.pageTable.resolveQuery((Integer.parseInt(operand)), isRandomReplacement));
