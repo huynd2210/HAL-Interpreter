@@ -28,7 +28,7 @@ public class PageTable {
     }
 
     //Resolve reference query from Interpreter: load,store...etc returns the physical address
-    public short resolveQuery(short virtualAddress) throws Exception {
+    public short resolveQuery(short virtualAddress, boolean isRandomReplacement) throws Exception {
         int virtualPageNumber = this.getPageNumber(virtualAddress);
         if (!this.pageNumberAndPageInformationMap.containsKey(virtualPageNumber)) {
             throw new Exception("Page Number: " + virtualPageNumber + " doesnt exists in table");
@@ -36,30 +36,83 @@ public class PageTable {
 
         if (this.pageNumberAndPageInformationMap.get(virtualPageNumber) == null) {
             //resolve empty case
-            return resolveEmptySlot(virtualPageNumber, virtualAddress);
+            return resolveEmptySlot(virtualPageNumber, virtualAddress, isRandomReplacement);
         } else {
-            return resolveTableAccess(virtualPageNumber, virtualAddress);
+            return resolveTableAccess(virtualPageNumber, virtualAddress, isRandomReplacement);
         }
     }
 
-    private short resolveEmptySlot(int pageNumber, short virtualAddress) throws Exception {
+    private short resolveEmptySlot(int pageNumber, short virtualAddress, boolean isRandomReplacement) throws Exception {
         //still remaining free physical memory pages
         if (this.fifoQueueForReplacement.size() < this.numberOfPhysicalPages) {
             this.insertPageMapEntry(pageNumber);
         } else {
-            resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
+
+            if (isRandomReplacement){
+                resolveTableAccessOnPageAbsentWithRandomness(virtualAddress);
+            }else{
+                resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
+            }
         }
         return this.virtualToPhysicalAddress(virtualAddress);
     }
 
-    private short resolveTableAccess(int virtualPageNumber, short virtualAddress) {
+    private short resolveTableAccess(int virtualPageNumber, short virtualAddress, boolean isRandomReplacement) {
         PageInformation pageInformation = this.pageNumberAndPageInformationMap.get(virtualPageNumber);
         if (pageInformation.isPresent) {
             pageInformation.isReferenced = true;
         } else {
-            resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
+            if (isRandomReplacement){
+                resolveTableAccessOnPageAbsentWithRandomness(virtualAddress);
+            }else{
+                resolveTableAccessOnPageAbsentWithFifoReference(virtualAddress);
+            }
         }
         return this.virtualToPhysicalAddress(virtualAddress);
+    }
+
+    private void resolveTableAccessOnPageAbsentWithRandomness(short virtualAddress) {
+        //resolve seitenersetzung random
+
+        List<Integer> activePageNumber = new ArrayList<>();
+        for (Map.Entry<Integer, PageInformation> entry : this.pageNumberAndPageInformationMap.entrySet()) {
+            if (entry.getValue() != null){
+                activePageNumber.add(entry.getKey());
+            }
+        }
+
+        Collections.shuffle(activePageNumber);
+        int pageNumberToBeReplaced = activePageNumber.get(0);
+        PageInformation replaced = this.pageNumberAndPageInformationMap.get(pageNumberToBeReplaced);
+        replaced.isPresent = false;
+
+        int queriedPageNumber = this.getPageNumber(virtualAddress);
+
+        if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null) {
+            this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
+            logs.append("Page fault due to empty page frame while accessing page number: ")
+                    .append(queriedPageNumber).append(". ")
+                    .append("page number ")
+                    .append(pageNumberToBeReplaced)
+                    .append(" with page frame number ")
+                    .append(replaced.physicalPageFrameMask)
+                    .append(" will be replaced")
+                    .append("\n");
+
+        } else {
+            PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
+            queriedPageInformation.isPresent = true;
+            queriedPageInformation.isReferenced = true;
+            queriedPageInformation.physicalPageFrameMask = replaced.physicalPageFrameMask;
+            logs.append("Page fault while accessing page number: ")
+                    .append(queriedPageNumber).append(" ")
+                    .append("page number ")
+                    .append(pageNumberToBeReplaced)
+                    .append(" with page frame number ")
+                    .append(replaced.physicalPageFrameMask)
+                    .append(" will be replaced")
+                    .append("\n");
+        }
     }
 
     private void resolveTableAccessOnPageAbsentWithFifoReference(short virtualAddress) {
@@ -75,7 +128,7 @@ public class PageTable {
 
                 int queriedPageNumber = this.getPageNumber(virtualAddress);
 
-                if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null){
+                if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null) {
                     this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
                     this.fifoQueueForReplacement.add(List.of(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true)));
                     logs.append("Page fault due to empty page frame while accessing page number: ")
@@ -87,7 +140,7 @@ public class PageTable {
                             .append(" will be replaced")
                             .append("\n");
 
-                }else{
+                } else {
                     PageInformation queriedPageInformation = this.pageNumberAndPageInformationMap.get(queriedPageNumber);
                     queriedPageInformation.isPresent = true;
                     queriedPageInformation.isReferenced = true;

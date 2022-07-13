@@ -19,6 +19,7 @@ public class Interpreter {
     private Integer currentInstruction;
     private final Map<String, Consumer<String>> instructionSet;
     private PageTable pageTable;
+    private boolean isRandomReplacement = false;
 
     public Interpreter(int id) {
         this.id = id;
@@ -39,7 +40,7 @@ public class Interpreter {
 //        }
         this.accumulator = 0d;
         this.instructionSet = new HashMap<>();
-        getInstructionSet();
+        getInstructionSet(this.isRandomReplacement);
 
     }
 
@@ -181,11 +182,11 @@ public class Interpreter {
         return instructions;
     }
 
-    private void getInstructionSet() {
+    private void getInstructionSet(boolean isRandomReplacement) {
         Consumer<String> storeInd = (operand) -> {
             Double indexPointer = 0.0;
             try {
-                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -194,7 +195,7 @@ public class Interpreter {
         Consumer<String> loadInd = (operand) -> {
             Double indexPointer = 0.0;
             try {
-                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+                indexPointer = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -226,14 +227,14 @@ public class Interpreter {
         };
         Consumer<String> store = (operand) -> {
             try {
-                this.register.set(this.pageTable.resolveQuery(Short.parseShort(operand)), this.accumulator);
+                this.register.set(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement), this.accumulator);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
         Consumer<String> load = (operand) -> {
             try {
-                this.accumulator = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand)));
+                this.accumulator = this.register.get(this.pageTable.resolveQuery(Short.parseShort(operand), isRandomReplacement));
             } catch (Exception e) {
                 e.printStackTrace();
             }

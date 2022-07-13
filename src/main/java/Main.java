@@ -21,25 +21,7 @@ public class Main {
 //        connectionGraph.startOS();
 //    }
 
-
-//    public static int getPageNumber(short virtualAddress) {
-//        short virtualPageNumberMask = (short) 64512;
-//        short maskedAddress = (short) (virtualAddress & virtualPageNumberMask);
-//        return (maskedAddress >> 10);
-//    }
-//
-//    public static short virtualToPhysicalAddress(short virtualAddress) {
-//        //first 6bit, note: 6bits for the entirety of virtual address, but physical address wont fully use 6bits during translation
-//        int pageNumber = getPageNumber(virtualAddress);
-//        int offsetMask = 1023;
-//        int maskedOffset = virtualAddress & offsetMask; //10 offset bits
-//
-//        int physicalAddress = pageNumberAndPageInformationMap.get(pageNumber).physicalPageFrameMask | maskedOffset;
-//        return (short) physicalAddress;
-//    }
-
-    public static void main(String[] args) throws Exception {
-
+    public static void testPageTable(boolean isRandomReplacement) throws Exception {
         PageTable pt = new PageTable();
 //        System.out.println(pt.resolveQuery((short) 1));
 //        System.out.println(pt.resolveQuery((short) 1025));
@@ -53,29 +35,37 @@ public class Main {
 //        System.out.println(pt.logs);
 
         for (int i = 0; i < 1024; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 1024; i < 2048; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 2048; i < 3072; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 3072; i < 4096; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 4096; i < 5120; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 5120; i < 6144; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         for (int i = 6144; i < 7168; i++) {
-            System.out.println(pt.resolveQuery((short) i));
+            System.out.println(pt.resolveQuery((short) i, isRandomReplacement));
         }
         System.out.println(pt.logs.toString());
-
+        System.out.println("There are in total: " + getAmountOfPageFaults(pt.logs.toString()) + " page faults, with 4 page faults resulting from initial insertion");
 //        praktikum5(new String[]{"sampleHAL1961", "false"});
+    }
+
+    public static int getAmountOfPageFaults(String logs){
+        return logs.split("\n").length;
+    }
+
+    public static void main(String[] args) throws Exception {
+        testPageTable(false);
     }
 
     private static void praktikum2(String[] args) {
