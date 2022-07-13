@@ -20,7 +20,7 @@ public class PageTable {
         this.logs = new StringBuilder();
     }
 
-    public void initEmptyPageMap() {
+    private void initEmptyPageMap() {
         int numberOfVirtualAddressPages = 64; //2^6 = 64
         for (int i = 0; i < numberOfVirtualAddressPages; i++) {
             pageNumberAndPageInformationMap.put(i, null);
@@ -77,8 +77,9 @@ public class PageTable {
 
                 if (this.pageNumberAndPageInformationMap.get(queriedPageNumber) == null){
                     this.pageNumberAndPageInformationMap.put(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true));
+                    this.fifoQueueForReplacement.add(List.of(queriedPageNumber, new PageInformation(replaced.physicalPageFrameMask, true, true)));
                     logs.append("Page fault due to empty page frame while accessing page number: ")
-                            .append(queriedPageNumber).append(" ")
+                            .append(queriedPageNumber).append(". ")
                             .append("page number ")
                             .append(poppedPageNumber)
                             .append(" with page frame number ")

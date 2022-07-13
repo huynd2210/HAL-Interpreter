@@ -1,7 +1,5 @@
 import interpreter.Interpreter;
 import interpreter.PageTable;
-import os.ConnectionGraph;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,15 +11,15 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void runPipeline(){
-        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFilePipeline");
-        connectionGraph.startOS();
-    }
-
-    public static void runGraph(){
-        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFileGraph");
-        connectionGraph.startOS();
-    }
+//    public static void runPipeline(){
+//        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFilePipeline");
+//        connectionGraph.startOS();
+//    }
+//
+//    public static void runGraph(){
+//        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFileGraph");
+//        connectionGraph.startOS();
+//    }
 
 
 //    public static int getPageNumber(short virtualAddress) {
@@ -41,14 +39,43 @@ public class Main {
 //    }
 
     public static void main(String[] args) throws Exception {
-//        System.out.println(virtualToPhysicalAddress((short)8197));
+
         PageTable pt = new PageTable();
-//        System.out.println(pt.resolveQuery((short) 10));
-//        System.out.println(pt.resolveQuery((short) 15));
-//        System.out.println(pt.resolveQuery((short) 3));
-        System.out.println(pt.resolveQuery((short) 1027));
+//        System.out.println(pt.resolveQuery((short) 1));
+//        System.out.println(pt.resolveQuery((short) 1025));
+//        System.out.println(pt.resolveQuery((short) 2049));
+//        System.out.println(pt.resolveQuery((short) 3073));
+//        System.out.println(pt.resolveQuery((short) 4098));
+//        System.out.println(pt.resolveQuery((short) 4099));
+//        System.out.println(pt.resolveQuery((short) 5121));
+//
+//        System.out.println(pt.fifoQueueForReplacement);
+//        System.out.println(pt.logs);
+
+        for (int i = 0; i < 1024; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 1024; i < 2048; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 2048; i < 3072; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 3072; i < 4096; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 4096; i < 5120; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 5120; i < 6144; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
+        for (int i = 6144; i < 7168; i++) {
+            System.out.println(pt.resolveQuery((short) i));
+        }
         System.out.println(pt.logs.toString());
 
+//        praktikum5(new String[]{"sampleHAL1961", "false"});
     }
 
     private static void praktikum2(String[] args) {
