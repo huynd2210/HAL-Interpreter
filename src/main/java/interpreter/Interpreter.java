@@ -294,7 +294,11 @@ public class Interpreter {
                 sb.append("Registernummer: " + i + " " + this.register.get(i));
             }
         };
-
+        Consumer<String> dumpprog = (empty) -> {
+            readProgramFile(program);
+        };
+        instructionSet.put("DUMPREG", dumpreg);
+        instructionSet.put("DUMPPROG", dumpprog);
         instructionSet.put("STOREIND", storeInd);
         instructionSet.put("LOADIND", loadInd);
         instructionSet.put("DIVNUM", divNum);
