@@ -35,9 +35,6 @@ public class Page {
   }
 
   public double load(int virtualAddress){
-    if (virtualAddressRegisters.get(virtualAddress) == null){
-      System.out.println("sdsd");
-    }
     return virtualAddressRegisters.get(virtualAddress);
   }
 

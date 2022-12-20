@@ -318,7 +318,7 @@ public class Interpreter {
       System.out.println(sb);
     };
     Consumer<String> dumpprog = (empty) -> {
-      readProgramFile(program);
+      System.out.println(program);
     };
     instructionSet.put("DUMPREG", dumpreg);
     instructionSet.put("DUMPPROG", dumpprog);

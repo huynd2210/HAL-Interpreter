@@ -14,6 +14,33 @@ public class Main {
         return logs.split("\n").length;
     }
 
+    public static void prak5(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Random replacement mode? (y/n)");
+        String rplMode = scanner.nextLine();
+        boolean rplModeBool = rplMode.equals("y");
+        Interpreter interpreter = new Interpreter(0, rplModeBool);
+        if (rplModeBool){
+            System.out.println("Random replacement mode enabled");
+        } else {
+            System.out.println("FIFO replacement with reference bit enabled");
+        }
+        interpreter.readProgram("HALPrograms/Prak5");
+        interpreter.run(false);
+        System.out.println("Logs:");
+        interpreter.registerMMU.printLog();
+        System.out.println("Amount of page faults: ");
+        System.out.println(getAmountOfPageFaults(interpreter.registerMMU.logger.toString()));
+    }
+
+
+
+    public static void main(String[] args) throws Exception {
+//        testMMU();
+//        testMMUWithHAL();
+        prak5();
+    }
+
     public static void testMMUWithHAL(){
         boolean isRandom = false;
         Interpreter interpreter = new Interpreter(0, false);
@@ -22,12 +49,6 @@ public class Main {
         interpreter.run(false);
 
 //        System.out.println(interpreter.registerMMU.storage);
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        testMMU();
-//        testMMUWithHAL();
     }
 
     public static void testMMU() throws Exception {

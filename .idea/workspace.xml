@@ -5,16 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ffebfd65-213b-4869-9740-25b04dec6ebe" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/HALPrograms/Prak5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interpreter/MMU.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/interpreter/Page.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/PageInformation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/PageInformation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/PageTable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/MMU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/MMU.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/Page.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/Page.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/interpreter/Interpreter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/Interpreter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/os/Connection.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/os/Connection.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/interpreter/MMU.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/MMU.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/interpreter/Page.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/Page.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,9 +83,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/interpreter/Page.java</url>
-          <line>38</line>
-          <option name="timeStamp" value="17" />
+          <url>file://$PROJECT_DIR$/src/main/java/interpreter/MMU.java</url>
+          <line>122</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java</url>
+          <line>320</line>
+          <option name="timeStamp" value="47" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

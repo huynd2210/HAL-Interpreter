@@ -8,10 +8,10 @@ import java.util.Map;
 public class MMU {
   //contains pageId -> Page
   public Map<Integer, Page> storage;
+  public StringBuilder logger;
   private final int pageSize = 1024;
   private Interpreter interpreter;
   private boolean isRandomReplacement;
-  private StringBuilder logger;
 
   public MMU(int virtualAddressSize, Interpreter interpreter, boolean isRandomReplacement) {
     initMMU(virtualAddressSize);
@@ -31,9 +31,6 @@ public class MMU {
   public void resolveStore(int virtualAddress, double value) throws Exception {
     //floor division
 
-    if (virtualAddress == 4096){
-      System.out.println("sdsd");
-    }
     int pageId = virtualAddress / pageSize;
     //page is present
     for (int i = 0; i < interpreter.pages.size(); i++) {
@@ -103,13 +100,15 @@ public class MMU {
 
   private int replacePageRandomly(int virtualAddress) throws Exception {
     int pageId = virtualAddress / pageSize;
-    this.logger.append("Page fault at page: " + pageId + "\n");
-    if (!this.isPageActive(pageId)) {
+    if (!this.isPageActive(pageId) && this.interpreter.pages.size() < 4) {
       return insertPage(pageId);
     }
     Collections.shuffle(this.interpreter.pages);
+    Page replaced = this.interpreter.pages.get(0);
     this.interpreter.pages.remove(0);
     Page replacing = this.storage.get(pageId);
+    String log = "Page fault at page: " + replaced.pageId + " replacing with page: " + replacing.pageId + "\n";
+    this.logger.append(log);
     this.interpreter.pages.add(replacing);
     return replacing.pageId;
   }
