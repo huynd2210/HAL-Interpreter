@@ -1,5 +1,5 @@
 import interpreter.Interpreter;
-import interpreter.PageTable;
+import interpreter.MMU;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,71 +7,73 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-
-//    public static void runPipeline(){
-//        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFilePipeline");
-//        connectionGraph.startOS();
-//    }
-//
-//    public static void runGraph(){
-//        ConnectionGraph connectionGraph = new ConnectionGraph("config/ConfigFileGraph");
-//        connectionGraph.startOS();
-//    }
-
-    public static void manualTest(boolean isRandom) throws Exception {
-        PageTable pt = new PageTable(new Interpreter(1));
-        System.out.println(pt.resolveQuery( 1, isRandom));
-        System.out.println(pt.resolveQuery( 1025, isRandom));
-        System.out.println(pt.resolveQuery( 2049, isRandom));
-        System.out.println(pt.resolveQuery( 3073, isRandom));
-        System.out.println(pt.resolveQuery( 4098, isRandom));
-        System.out.println(pt.resolveQuery( 4099, isRandom));
-        System.out.println(pt.resolveQuery( 5121, isRandom));
-    }
-
-    public static void testPageTable(boolean isRandomReplacement) throws Exception {
-        PageTable pt = new PageTable(new Interpreter(1));
-
-        System.out.println(pt.fifoQueueForReplacement);
-        System.out.println(pt.logs);
-
-        for (int i = 0; i < 1024; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 1024; i < 2048; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 2048; i < 3072; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 3072; i < 4096; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 4096; i < 5120; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 5120; i < 6144; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        for (int i = 6144; i < 7168; i++) {
-            System.out.println(pt.resolveQuery(i, isRandomReplacement));
-        }
-        System.out.println(pt.logs.toString());
-        System.out.println("There are in total: " + getAmountOfPageFaults(pt.logs.toString()) + " page faults, with 4 page faults resulting from initial insertion");
-//        praktikum5(new String[]{"sampleHAL1961", "false"});
-    }
-
     public static int getAmountOfPageFaults(String logs) {
         return logs.split("\n").length;
     }
 
+    public static void testMMUWithHAL(){
+        boolean isRandom = false;
+        Interpreter interpreter = new Interpreter(0, false);
+
+        interpreter.setProgram(writeHALProgramForMMU());
+        interpreter.run(false);
+
+//        System.out.println(interpreter.registerMMU.storage);
+    }
+
+
     public static void main(String[] args) throws Exception {
-        testPageTable(false);
-//        manualTest(false);
+        testMMU();
+//        testMMUWithHAL();
+    }
+
+    public static void testMMU() throws Exception {
+        boolean isRandom = true;
+        MMU testMMU = new MMU(65536, new Interpreter(1, isRandom), isRandom);
+
+        for (int i = 0 ; i < 65536; i++){
+            testMMU.resolveStore(i, i + 1);
+        }
+
+        for (int i = 0 ; i < 65536; i++){
+            Double aDouble = testMMU.resolveLoad(i);
+//            System.out.println(aDouble);
+        }
+
+
+//        System.out.println(testMMU.storage);
+        System.out.println("------------------");
+        testMMU.printLog();
+
+    }
+
+    public static String writeHALProgramForMMU(){
+        int i = 0;
+        StringBuilder sb = new StringBuilder();
+        i = addLine(sb, i, "START");
+        int range = 5120;
+        for (int j = 0; j <= 6025; j++){
+            i = addLine(sb, i, "LOADNUM " + (j + 1));
+            i = addLine(sb, i, "STORE " + j);
+        }
+        i = addLine(sb, i, "DUMPREG");
+//        i = addLine(sb, i, "LOAD 0");
+//        i = addLine(sb, i, "OUT 0");
+//        i = addLine(sb, i, "LOAD 4095");
+//        i = addLine(sb, i, "OUT 0");
+//        i = addLine(sb, i, "LOAD 4096");
+//        i = addLine(sb, i, "OUT 0");
+        i = addLine(sb, i, "STOP");
+//        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    private static int addLine(StringBuilder sb, int i, String line) {
+        sb.append(i + " " + line + "\n");
+        return ++i;
     }
 
     private static void praktikum2(String[] args) {
@@ -91,8 +93,8 @@ public class Main {
         String program = readProgramFile(file);
         System.out.println(program);
 
-        Interpreter interpreter = new Interpreter(1);
-        interpreter.addProgram(program);
+        Interpreter interpreter = new Interpreter(1, false);
+        interpreter.readProgram(program);
         interpreter.run(isDebug);
         Scanner sc = new Scanner(System.in);
         System.out.println("Press any key to exit");

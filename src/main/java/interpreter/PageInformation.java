@@ -28,5 +28,15 @@ public class PageInformation {
             this.data.add(0d);
         }
     }
+
+    @Override
+    public String toString() {
+        return "PageInformation{" +
+                "physicalPageFrameMask=" + physicalPageFrameMask +
+                ", isPresent=" + isPresent +
+                ", isReferenced=" + isReferenced +
+                ", data=" + data +
+                '}';
+    }
 }
 
