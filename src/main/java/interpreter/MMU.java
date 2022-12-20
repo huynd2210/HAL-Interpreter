@@ -35,6 +35,7 @@ public class MMU {
     //page is present
     for (int i = 0; i < interpreter.pages.size(); i++) {
       if (interpreter.pages.get(i).pageId == pageId) {
+        interpreter.pages.get(i).isReferenced = true;
         interpreter.pages.get(i).store(virtualAddress, value);
         return;
       }
@@ -58,6 +59,7 @@ public class MMU {
     //page is present
     for (int i = 0; i < interpreter.pages.size(); i++) {
       if (interpreter.pages.get(i).pageId == pageId) {
+        interpreter.pages.get(i).isReferenced = true;
         return interpreter.pages.get(i).load(virtualAddress);
       }
     }
@@ -76,6 +78,7 @@ public class MMU {
   }
 
   private int replacePageWithFifoReferencedBit(int virtualAddress) throws Exception {
+//    Thread.sleep(50);
     int pageId = virtualAddress / pageSize;
     if (!this.isPageActive(pageId) && this.interpreter.pages.size() < 4) {
       return insertPage(pageId);
@@ -88,7 +91,9 @@ public class MMU {
         replacing.isReferenced = true;
         this.storage.put(interpreter.pages.get(0).pageId, interpreter.pages.get(0));
         this.logger.append("Page fault at page: " + interpreter.pages.get(0).pageId + " replacing with page: " + replacing.pageId + "\n");
-        interpreter.pages.set(0, replacing);
+
+        interpreter.pages.add(replacing);
+        interpreter.pages.remove(0);
         return replacing.pageId;
       } else {
         //set referenced bit to false and push to last position
@@ -99,13 +104,20 @@ public class MMU {
   }
 
   private int replacePageRandomly(int virtualAddress) throws Exception {
+//    Thread.sleep(50);
     int pageId = virtualAddress / pageSize;
     if (!this.isPageActive(pageId) && this.interpreter.pages.size() < 4) {
       return insertPage(pageId);
     }
-    Collections.shuffle(this.interpreter.pages);
-    Page replaced = this.interpreter.pages.get(0);
-    this.interpreter.pages.remove(0);
+//    Collections.shuffle(this.interpreter.pages);
+//    Page replaced = this.interpreter.pages.get(0);
+
+    //random int between 0 and 3
+    int randomIndex = (int) (Math.random() * 4);
+    Page replaced = this.interpreter.pages.get(randomIndex);
+
+//    this.interpreter.pages.remove(0);
+    this.interpreter.pages.remove(randomIndex);
     Page replacing = this.storage.get(pageId);
     String log = "Page fault at page: " + replaced.pageId + " replacing with page: " + replacing.pageId + "\n";
     this.logger.append(log);
@@ -117,7 +129,7 @@ public class MMU {
     if (this.interpreter.pages.size() < this.interpreter.maxPages) {
       this.interpreter.pages.add(this.storage.get(pageId));
       this.storage.get(pageId).isReferenced = true;
-      this.logger.append("Page fault while accessing: " + pageId + " due to initialization, loading page into register \n ");
+//      this.logger.append("Page fault while accessing: " + pageId + " due to initialization, loading page into register \n ");
       return pageId;
     }
     throw new Exception("Should not have happened, insert page while max pages reached");

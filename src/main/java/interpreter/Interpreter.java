@@ -14,8 +14,8 @@ public class Interpreter {
   public String program;
   public List<String> ioList;
   public List<Page> pages;
+  public List<String> programMemory;
   public MMU registerMMU;
-  public MMU programMMU;
   public final int maxPages = 4;
   private Double accumulator;
   private Integer programCounter;
@@ -30,9 +30,9 @@ public class Interpreter {
 //        this.register = new ArrayList<>();
     this.pages = new ArrayList<>();
     this.ioList = new ArrayList<>();
+    this.programMemory = new ArrayList<>();
     this.isRandomReplacement = isRandomReplacement;
     this.registerMMU = new MMU(virtualAddressSize, this, isRandomReplacement);
-    this.programMMU = new MMU(virtualAddressSize, this, isRandomReplacement);
     int maxIO = 6;
     this.initIO(maxIO);
     this.accumulator = 0d;
@@ -60,6 +60,9 @@ public class Interpreter {
       sb.append(s);
       sb.append("\n");
     }
+
+    this.programMemory.addAll(Arrays.asList(sb.toString().split("\n")));
+
     return sb.toString();
   }
 
@@ -327,7 +330,10 @@ public class Interpreter {
       System.out.println(sb);
     };
     Consumer<String> dumpprog = (empty) -> {
-      System.out.println(program);
+//      System.out.println(program);
+      for (String s : this.programMemory) {
+        System.out.println(s);
+      }
     };
     instructionSet.put("DUMPREG", dumpreg);
     instructionSet.put("DUMPPROG", dumpprog);
