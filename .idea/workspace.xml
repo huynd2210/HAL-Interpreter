@@ -8,12 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/MMU.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/MMU.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interpreter/Page.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interpreter/Page.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/interpreter/Interpreter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/Interpreter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/interpreter/MMU.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/MMU.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/interpreter/Page.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interpreter/Page.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +35,9 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Games/hal_mmu" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -89,8 +88,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/interpreter/Interpreter.java</url>
-          <line>320</line>
+          <line>327</line>
           <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Main.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="48" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

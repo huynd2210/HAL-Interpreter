@@ -63,23 +63,32 @@ public class Interpreter {
     return sb.toString();
   }
 
-  public void run(boolean isDebug) {
-//        long startTime = System.nanoTime();
-    System.out.println("Processor: " + this.id + " starting");
-    this.executeProgram(this.parseProgram(this.program), isDebug);
-//        long endTime = System.nanoTime();
-//        long duration = (endTime - startTime) / 1000000; //ms
-//        printRunTime(duration);
+  public int getAmountOfPageFaults(String logs) {
+    return logs.split("\n").length;
+  }
 
+  public void run(boolean isDebug) {
+    System.out.println("Processor: " + this.id + " starting");
+    long startTime = System.nanoTime();
+    this.executeProgram(this.parseProgram(this.program), isDebug);
+    long endTime = System.nanoTime();
+    System.out.println("Logs:");
+    this.registerMMU.printLog();
+    System.out.println("Amount of page faults: ");
+    System.out.println(getAmountOfPageFaults(this.registerMMU.logger.toString()));
+//    long duration = (endTime - startTime) / 1000000; //ms
+    long duration = (endTime - startTime) / 1000000; //ms
+    printRunTime(duration);
   }
 
   private void printRunTime(long duration) {
-    int durationSecond = (int) duration / 1000;
+//    int durationSecond = (int) duration / 1000;
     System.out.print("Program duration: ");
-    if (durationSecond > 60) {
-      System.out.print(durationSecond / 60 + "m ");
-    }
-    System.out.print(durationSecond % 60 + "s\n");
+    System.out.println(duration);
+//    if (durationSecond > 60) {
+//      System.out.print(durationSecond / 60 + "m ");
+//    }
+//    System.out.print(durationSecond % 60 + "s\n");
   }
 
   private void printState(String currentInstruction) {

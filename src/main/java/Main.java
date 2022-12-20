@@ -10,15 +10,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static int getAmountOfPageFaults(String logs) {
-        return logs.split("\n").length;
-    }
 
     public static void prak5(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Random replacement mode? (y/n)");
         String rplMode = scanner.nextLine();
-        boolean rplModeBool = rplMode.equals("y");
+        boolean rplModeBool = rplMode.equalsIgnoreCase("y");
         Interpreter interpreter = new Interpreter(0, rplModeBool);
         if (rplModeBool){
             System.out.println("Random replacement mode enabled");
@@ -27,10 +24,7 @@ public class Main {
         }
         interpreter.readProgram("HALPrograms/Prak5");
         interpreter.run(false);
-        System.out.println("Logs:");
-        interpreter.registerMMU.printLog();
-        System.out.println("Amount of page faults: ");
-        System.out.println(getAmountOfPageFaults(interpreter.registerMMU.logger.toString()));
+
     }
 
 
